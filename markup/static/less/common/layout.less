@@ -1,0 +1,41 @@
+/* ==========================================================================
+   LAYOUT STYLES
+   ========================================================================== */
+
+.staticFooter(@h:100px) {
+  .page-buffer {
+    padding-bottom: @h;
+  }
+  .page-footer {
+    height: @h;
+    margin-top: -@h;
+  }
+}
+
+html, body {
+  height: 100%;
+}
+
+.page-footer {
+
+}
+
+@media (min-width: @screen-xs-min) {
+
+}
+
+@media (min-width: @screen-sm-min) {
+  .page-wrapper {
+    min-height: 100%;
+  }
+  .staticFooter(40px);
+}
+// Пример адаптивного, прижатого к низу футера
+
+//@media (min-width: @screen-md-min) {
+//  .staticFooter(365px);
+//}
+//@media (min-width: @screen-lg-min) {
+//  .staticFooter(424px);
+//}
+//
