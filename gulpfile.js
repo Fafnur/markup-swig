@@ -37,19 +37,12 @@ var src = {
     video: prefix_dir + '/video',
     html:  prefix_dir + '',
     data:  prefix_dir + 'dev/js/data.js',
-    staticJs:  'markup/static/js/*.*',
-    staticCss: 'markup/static/css/*.*',
-    staticImg: [
-        'markup/static/images/*.*',
-        'markup/static/images/**/*.*',
-        'markup/static/images/**/**/*.*'
-    ],
-    staticFonts:    'markup/static/fonts/*.*',
-    staticLibs:     'markup/static/libs/**/*',
-    staticVideo:     [
-        'markup/static/video/**/*.*',
-        'markup/static/video/*.*'
-    ]
+    staticJs:    'markup/static/js/**/*',
+    staticCss:   'markup/static/css/**/*',
+    staticImg:   'markup/static/images/**/*',
+    staticFonts: 'markup/static/fonts/**/*',
+    staticLibs:  'markup/static/libs/**/*',
+    staticVideo: 'markup/static/video/**/*'
 };
 
 var config = [
