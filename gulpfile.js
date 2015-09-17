@@ -10,11 +10,12 @@ var prefix      = require('gulp-autoprefixer');
 var concat      = require('gulp-concat');
 var path        = require('path');
 var notify      = require('gulp-notify');
+var clean       = require('gulp-clean');
 
 // Demo Data
 var data        = require('./markup/static/js/data.js');
 
-var prefix_dir = 'web/dev';
+var htdocs = 'web/dev';
 
 var src = {
     less: [
@@ -29,91 +30,31 @@ var src = {
     ],
     swig:  './markup/views/**/*.twig',
     pages: './markup/views/pages/*.twig',
-    css:   prefix_dir + '/css',
-    js:    prefix_dir + '/js',
-    img:   prefix_dir + '/images',
-    fonts: prefix_dir + '/fonts',
-    libs:  prefix_dir + '/libs',
-    video: prefix_dir + '/video',
-    html:  prefix_dir + '',
-    data:  prefix_dir + 'dev/js/data.js',
-    staticJs:    'markup/static/js/**/*',
-    staticCss:   'markup/static/css/**/*',
-    staticImg:   'markup/static/images/**/*',
-    staticFonts: 'markup/static/fonts/**/*',
-    staticLibs:  'markup/static/libs/**/*',
-    staticVideo: 'markup/static/video/**/*'
+    staticFiles: 'markup/static/**/*',
+    css:   htdocs + '/css',
+    js:    htdocs + '/js',
+    img:   htdocs + '/images',
+    fonts: htdocs + '/fonts',
+    libs:  htdocs + '/libs',
+    video: htdocs + '/video',
+    data:  htdocs + '/js/data.js',
+    html:  htdocs
+
 };
 
 var config = [
-	{
-        isTask: false,
-		path: src.less,
-		name: 'less'
-	},
-	{
-        isTask: false,
-		path: src.swig,
-		name: 'templates'
-	},
-	{
-        isTask: false,
-		path: src.pages,
-		name: 'templates'
-	},
-	{
-        isTask: true,
-		path: src.staticCss,
-        dest: src.css,
-		name: 'static-css'
-	},
-	{
-        isTask: true,
-		path: src.staticJs,
-        dest: src.js,
-		name: 'static-js'
-	},
-	{
-        isTask: true,
-		path: src.staticImg,
-        dest: src.img,
-		name: 'static-img'
-	},
-	{
-        isTask: true,
-		path: src.staticFonts,
-        dest: src.fonts,
-		name: 'static-fonts'
-	},
-	{
-        isTask: true,
-		path: src.staticLibs,
-        dest: src.libs,
-		name: 'static-libs'
-	},
-	{
-        isTask: true,
-		path: src.staticVideo,
-        dest: src.video,
-		name: 'static-video'
-	}
+    {
+        isTask: false, path: src.less,  name: 'less'
+    },
+    {
+        isTask: false, path: src.swig,  name: 'templates'
+    },
+    {
+        isTask: false, path: src.pages, name: 'templates'
+    }
 ];
 
-// Add move static files
-config.forEach(function (item, i, config) {
-    if(item.isTask) {
-        gulp.task(item.name, function () {
-            return gulp.src(item.path)
-                .on('error', notify.onError(function (error) {
-                    return '\nError! Look in the console for details.\n' + error;
-                }))
-                .pipe(gulp.dest(item.dest))
-                .pipe(browserSync.reload({stream:true}));
-        });
-    }
-});
-
-//  Server + watching less/html files
+//  Server
 gulp.task('server', ['less'], function() {
 
     browserSync({
@@ -132,7 +73,7 @@ gulp.task('server', ['less'], function() {
     });
 });
 
-// Swig modules
+// Compile Swig
 gulp.task('templates', function() {
     return gulp.src(src.pages)
         .pipe(swig({
@@ -171,4 +112,20 @@ gulp.task('js', function () {
         .pipe(browserSync.reload({stream:true}));
 });
 
-gulp.task('default', ['server', 'static-fonts', 'static-img', 'static-js', 'static-css', 'templates', 'static-libs', 'static-video' ]);
+// Move static files
+gulp.task('static-files', function () {
+    return gulp.src(src.staticFiles)
+        .on('error', notify.onError(function (error) {
+            return '\nError! Look in the console for details.\n' + error;
+        }))
+        .pipe(gulp.dest(src.html))
+        .pipe(browserSync.reload({stream:true}));
+});
+
+// Clean htdocs
+gulp.task('clean', function () {
+    return gulp.src(htdocs, {read: false})
+        .pipe(clean());
+});
+
+gulp.task('default', ['clean', 'server', 'templates', 'static-files']);
