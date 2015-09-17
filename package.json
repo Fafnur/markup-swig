@@ -6,8 +6,6 @@
   "scripts": {
     "start": "gulp"
   },
-  "author": "Aleksandr Serenko",
-  "license": "MIT",
   "devDependencies": {
     "browser-sync": "^2.2.0",
     "chokidar": "^1.0.3",
@@ -23,5 +21,18 @@
     "gulp-notify": "^2.2.0",
     "gulp-rename": "~1.2.2",
     "gulp-swig": "^0.7.4"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Fafnur/gulp-swig.git"
+  },
+  "author": "Aleksandr Serenko",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Fafnur/gulp-swig/issues"
+  },
+  "homepage": "https://github.com/Fafnur/gulp-swig",
+  "keywords": [
+    "gulp", "markup"
+  ]
 }
