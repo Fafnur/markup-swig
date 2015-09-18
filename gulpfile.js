@@ -53,7 +53,7 @@ var config = [
         path: src.pages, name: 'templates'
     },
     {
-        path: src.html, name: 'static-files'
+        path: src.staticFiles, name: 'static-files'
     }
 ];
 
