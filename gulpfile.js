@@ -127,8 +127,8 @@ gulp.task('static-files', function () {
 
 // Clean htdocs
 gulp.task('clean', function () {
-    return gulp.src(htdocs, {read: false})
+    return gulp.src(src.html, {read: false})
         .pipe(clean());
 });
 
-gulp.task('default', ['clean', 'server', 'templates', 'static-files']);
+gulp.task('default', [ 'clean', 'static-files', 'server', 'less', 'templates' ]);
