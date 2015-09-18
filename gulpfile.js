@@ -15,7 +15,7 @@ var clean       = require('gulp-clean');
 // Demo Data
 var data        = require('./markup/static/js/data.js');
 
-var htdocs = 'web/dev';
+var htdocs      = 'web/dev';
 
 var src = {
     less: [
@@ -44,13 +44,16 @@ var src = {
 
 var config = [
     {
-        isTask: false, path: src.less,  name: 'less'
+        path: src.less,  name: 'less'
     },
     {
-        isTask: false, path: src.swig,  name: 'templates'
+        path: src.swig,  name: 'templates'
     },
     {
-        isTask: false, path: src.pages, name: 'templates'
+        path: src.pages, name: 'templates'
+    },
+    {
+        path: src.html, name: 'static-files'
     }
 ];
 
