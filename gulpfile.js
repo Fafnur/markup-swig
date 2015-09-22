@@ -131,4 +131,4 @@ gulp.task('clean', function () {
         .pipe(clean());
 });
 
-gulp.task('default', [ 'clean', 'static-files', 'server', 'less', 'templates' ]);
+gulp.task('default', [  'static-files', 'server', 'less', 'templates' ]);
