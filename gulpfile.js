@@ -10,12 +10,13 @@ var prefix      = require('gulp-autoprefixer');
 var concat      = require('gulp-concat');
 var path        = require('path');
 var notify      = require('gulp-notify');
-var clean       = require('gulp-clean');
+var rimraf      = require('gulp-rimraf');
+
 
 // Demo Data
-var data        = require('./markup/static/js/data.js');
+var data    = require('./markup/static/js/data.js');
 
-var htdocs      = 'web/dev';
+var htdocs  = 'app';
 
 var src = {
     less: [
@@ -56,7 +57,7 @@ var config = [
 gulp.task('server', ['less'], function() {
 
     browserSync({
-        server: src.html,
+        server: src.html
         //files: ["dev/*.html", "dev/css/*.css", "dev/js/*.js"]
     });
 
@@ -121,9 +122,11 @@ gulp.task('static-files', function () {
 });
 
 // Clean htdocs
-gulp.task('clean', function () {
-    return gulp.src(src.html, {read: false})
-        .pipe(clean());
+gulp.task('clean', function() {
+    return gulp.src(src.html, { read: false })
+        .pipe(rimraf({ force: true }));
 });
 
-gulp.task('default', [  'static-files', 'server', 'less', 'templates' ]);
+gulp.task('build', ['static-files', 'less', 'templates']);
+
+gulp.task('default', ['build', 'server']);
