@@ -1,0 +1,23 @@
+{
+  "name": "alex",
+  "version": "1.0.0",
+  "authors": [
+    "fafnur <fafnur@yandex.ru>"
+  ],
+  "description": "Default",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "web",
+    "markup/static/components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.5",
+    "font-awesome": "fontawesome#~4.4.0",
+    "jquery": "~2.1.4"
+  }
+}

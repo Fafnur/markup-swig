@@ -33,13 +33,8 @@ var src = {
     staticFiles: 'markup/static/**/*',
     css:   htdocs + '/css',
     js:    htdocs + '/js',
-    img:   htdocs + '/images',
-    fonts: htdocs + '/fonts',
-    libs:  htdocs + '/libs',
-    video: htdocs + '/video',
     data:  htdocs + '/js/data.js',
     html:  htdocs
-
 };
 
 var config = [
@@ -62,7 +57,7 @@ gulp.task('server', ['less'], function() {
 
     browserSync({
         server: src.html,
-        files: ["dev/*.html", "dev/css/*.css", "dev/js/*.js"]
+        //files: ["dev/*.html", "dev/css/*.css", "dev/js/*.js"]
     });
 
     config.forEach(function (item, i, config) {
@@ -72,7 +67,7 @@ gulp.task('server', ['less'], function() {
             ignoreInitial: true
         }).on('all', function(event, path) {
             gulp.start(item.name);
-        });
+        }) .on('error', function(error) { log('Error happened', error); });
     });
 });
 

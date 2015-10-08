@@ -1,3 +1,4 @@
-node_modules/
-.idea/
-web/
+/node_modules/
+/.idea/
+/web/
+/markup/static/components/
