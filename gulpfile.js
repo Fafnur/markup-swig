@@ -16,7 +16,7 @@ var rimraf      = require('gulp-rimraf');
 // Demo Data
 var data    = require('./markup/static/js/data.js');
 
-var htdocs  = 'app';
+var htdocs  = 'web/dev';
 
 var src = {
     less: [
