@@ -20,3 +20,6 @@
 //
 //module.exports.portfolio = portfolio;
 //
+
+module.exports.asset = function (param) { return '/' + param; };
+module.exports.path  = function (param) { return param + '.html'; };

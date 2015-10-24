@@ -12,26 +12,26 @@ var path        = require('path');
 var notify      = require('gulp-notify');
 var rimraf      = require('gulp-rimraf');
 
+var htdocs  = 'web';
+//var build   = htdocs + '/build';
+var markup  = 'markup';
 
 // Demo Data
-var data    = require('./markup/static/js/data.js');
-
-var htdocs  = 'web/dev';
+var data    = require('./markup/data.js');
 
 var src = {
     less: [
-        './markup/static/less/vars/variables.less',
-        './markup/static/less/vars/mixin.less',
-        './markup/static/less/common/*.less',
-        './markup/static/less/libs/**/*.less',
-        './markup/static/less/libs/**/*.css',
-        './markup/static/less/snippets/**/*.less',
-        './markup/static/less/modules/**/*.less',
-        './markup/static/less/modules/**/**/*.less'
+        htdocs + '/less/vars/variables.less',
+        htdocs + '/less/vars/mixin.less',
+        htdocs + '/less/common/*.less',
+        htdocs + '/less/libs/**/*.less',
+        htdocs + '/less/libs/**/*.css',
+        htdocs + '/less/snippets/**/*.less',
+        htdocs + '/less/modules/**/*.less',
+        htdocs + '/less/modules/**/**/*.less'
     ],
-    swig:  './markup/views/**/*.twig',
-    pages: './markup/views/pages/*.twig',
-    staticFiles: 'markup/static/**/*',
+    swig:  markup + '/**/*.twig',
+    pages: markup + '/pages/*.twig',
     css:   htdocs + '/css',
     js:    htdocs + '/js',
     data:  htdocs + '/js/data.js',
@@ -39,26 +39,17 @@ var src = {
 };
 
 var config = [
-    {
-        path: src.less,  name: 'less'
-    },
-    {
-        path: src.swig,  name: 'templates'
-    },
-    {
-        path: src.pages, name: 'templates'
-    },
-    {
-        path: src.staticFiles, name: 'static-files'
-    }
+    {path: src.less,  name: 'less'},
+    {path: src.swig,  name: 'templates'},
+    {path: src.pages, name: 'templates'}
 ];
 
 //  Server
 gulp.task('server', ['less'], function() {
 
     browserSync({
-        server: src.html
-        //files: ["dev/*.html", "dev/css/*.css", "dev/js/*.js"]
+        server: src.html,
+        serveStatic: ['.', '../']
     });
 
     config.forEach(function (item, i, config) {
@@ -111,22 +102,6 @@ gulp.task('js', function () {
         .pipe(browserSync.reload({stream:true}));
 });
 
-// Move static files
-gulp.task('static-files', function () {
-    return gulp.src(src.staticFiles)
-        .on('error', notify.onError(function (error) {
-            return '\nError! Look in the console for details.\n' + error;
-        }))
-        .pipe(gulp.dest(src.html))
-        .pipe(browserSync.reload({stream:true}));
-});
-
-// Clean htdocs
-gulp.task('clean', function() {
-    return gulp.src(src.html, { read: false })
-        .pipe(rimraf({ force: true }));
-});
-
-gulp.task('build', ['static-files', 'less', 'templates']);
+gulp.task('build', ['less', 'templates']);
 
 gulp.task('default', ['build', 'server']);

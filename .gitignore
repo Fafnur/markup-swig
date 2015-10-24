@@ -1,4 +1,4 @@
 /node_modules/
 /.idea/
-/web/
-/markup/static/components/
+/web/build/
+/web/components/
