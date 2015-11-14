@@ -1,0 +1,33 @@
+.cicon() {
+  display: inline-block;
+  font: normal normal normal 14px/1 Arial;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transform: translate(0, 0);
+  vertical-align: middle;
+
+  &:before,
+  &:after {
+    .box-sizing(border-box);
+  }
+}
+
+.cicon-add(@url, @width, @height) {
+  &:before {
+    display: inline-block;
+    content: '';
+    background: url(@url) 50% 50% no-repeat;
+    .size(@width, @height)
+  }
+}
+
+.cicon-add(@url, @width, @height, @posw, @posh) {
+  &:before {
+    display: inline-block;
+    content: '';
+    background: url(@url) @posw @posh no-repeat;
+    .size(@width, @height)
+  }
+}

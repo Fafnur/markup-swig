@@ -1,0 +1,44 @@
+.cicon-sprite(@url, @height) {
+  display: inline-block;
+  font: normal normal normal 14px/1 Arial;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transform: translate(0, 0);
+  vertical-align: middle;
+
+  &:before,
+  &:after {
+    .box-sizing(border-box);
+  }
+
+  &:before {
+    height: @height;
+    background-image: url(@url);
+    background-repeat: no-repeat;
+  }
+}
+
+.cicon-sprite-add(@pos, @width) {
+  &:before {
+    display: inline-block;
+    content: '';
+    background-position: @pos;
+    width: @width;
+  }
+}
+
+.cicon-sprite-add-active(@pos, @width, @posActive) {
+  &:before {
+    display: inline-block;
+    content: '';
+    background-position: @pos;
+    width: @width;
+  }
+  &:hover {
+    &:before {
+      background-position: @posActive;
+    }
+  }
+}

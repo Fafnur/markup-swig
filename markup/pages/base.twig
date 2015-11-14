@@ -40,13 +40,17 @@
     <![endif]-->
 {% endblock %}
 
-{% block page-wrapper %}
+{% block page_wrapper %}
     <div class="page-wrapper">
         <div class="page-buffer ">
+
+
+            {% include '../common/navbar.twig' %}
+
             {% block header %}
-                <header class="header-wr">
+                <header class="header">
                     <div class="container">
-                        <p class="header">Тут мог быть ваш логотип</p>
+                        <a href="#home" class="logo">Тут мог быть ваш логотип</a>
                     </div>
                 </header>
             {% endblock %}
@@ -88,6 +92,6 @@
     <script src="{{ asset('js/main.js') }}"></script>
     {% block javascript %}{% endblock %}
 {% endblock %}
-
+{% endblock %}
 </body>
 </html>

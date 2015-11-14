@@ -1,0 +1,16 @@
+{
+  "mainMenu": {
+    "item1": {
+      "title": "Home",
+      "path":  "#home"
+    },
+    "item2": {
+      "title": "About",
+      "path":  "#about"
+    },
+    "item3": {
+      "title": "Contacts",
+      "path":  "#contacts"
+    }
+  }
+}

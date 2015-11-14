@@ -1,74 +1,80 @@
-var gulp        = require('gulp');
-var browserSync = require('browser-sync');
-var swig        = require('gulp-swig');
-var reload      = browserSync.reload;
-var chokidar    = require('chokidar');
-var less        = require('gulp-less');
-var rename      = require('gulp-rename');
-var minifyCSS   = require('gulp-minify-css');
-var prefix      = require('gulp-autoprefixer');
-var concat      = require('gulp-concat');
-var path        = require('path');
-var notify      = require('gulp-notify');
-var rimraf      = require('gulp-rimraf');
+var gulp        = require('gulp'),
+    requireWC   = require('require-without-cache'),
+    browserSync = require('browser-sync'),
+    swig        = require('gulp-swig'),
+    chokidar    = require('chokidar'),
+    less        = require('gulp-less'),
+    sass        = require('gulp-sass'),
+    rename      = require('gulp-rename'),
+    minifyCSS   = require('gulp-minify-css'),
+    prefix      = require('gulp-autoprefixer'),
+    concat      = require('gulp-concat'),
+    path        = require('path'),
+    notify      = require('gulp-notify'),
+    rimraf      = require('gulp-rimraf'),
+    data        = require('gulp-data'),
+    imagemin    = require('gulp-imagemin'),
+    pngquant    = require('imagemin-pngquant'),
+    sourcemaps  = require('gulp-sourcemaps'),
+    jshint      = require('gulp-jshint')
+    ;
 
-var htdocs  = 'web';
-//var build   = htdocs + '/build';
-var markup  = 'markup';
+var htdocs = 'web',
+    markup = 'markup',
+    src = {
+        less: [
+            htdocs + '/less/vars/variables.less',
+            htdocs + '/less/vars/mixin.less',
+            htdocs + '/less/common/*.less',
+            htdocs + '/less/libs/**/*.less',
+            htdocs + '/less/libs/**/*.css',
+            htdocs + '/less/snippets/**/*.less',
+            htdocs + '/less/modules/**/*.less',
+            htdocs + '/less/modules/**/**/*.less'
+        ],
+        sass: [
+            htdocs + '/less/vars/variables.scss',
+            htdocs + '/less/vars/mixin.scss',
+            htdocs + '/less/common/*.scss',
+            htdocs + '/less/libs/**/*.scss',
+            htdocs + '/less/libs/**/*.scss',
+            htdocs + '/less/snippets/**/*.scss',
+            htdocs + '/less/modules/**/*.scss',
+            htdocs + '/less/modules/**/**/*.scss'
+        ],
+        swig:     markup + '/**/*.twig',
+        pages:    markup + '/pages/*.twig',
+        css:      htdocs + '/css',
+        cssmain:  'template.css',
+        cssmaino: 'template.min.css',
+        js:       htdocs + '/js',
+        images:   htdocs + '/images',
+        data:     markup + '/data.js',
+        json:     markup + '/data.json',
+        html:     htdocs
+    },
+    config = [
+        {path: src.less,  name: 'less'},
+        {path: src.swig,  name: 'templates'},
+        {path: src.pages, name: 'templates'},
+        {path: src.json, name: 'templates'}
+    ];
 
-// Demo Data
-var data    = require('./markup/data.js');
-
-var src = {
-    less: [
-        htdocs + '/less/vars/variables.less',
-        htdocs + '/less/vars/mixin.less',
-        htdocs + '/less/common/*.less',
-        htdocs + '/less/libs/**/*.less',
-        htdocs + '/less/libs/**/*.css',
-        htdocs + '/less/snippets/**/*.less',
-        htdocs + '/less/modules/**/*.less',
-        htdocs + '/less/modules/**/**/*.less'
-    ],
-    swig:  markup + '/**/*.twig',
-    pages: markup + '/pages/*.twig',
-    css:   htdocs + '/css',
-    js:    htdocs + '/js',
-    data:  htdocs + '/js/data.js',
-    html:  htdocs
+var opts = {
+    //load_json: true,
+    setup: function(swig) {
+        swig.setDefaults({
+            cache: false,
+            locals: requireWC('./' + src.data, require)
+        });
+    }
 };
-
-var config = [
-    {path: src.less,  name: 'less'},
-    {path: src.swig,  name: 'templates'},
-    {path: src.pages, name: 'templates'}
-];
-
-//  Server
-gulp.task('server', ['less'], function() {
-
-    browserSync({
-        server: src.html,
-        serveStatic: ['.', '../']
-    });
-
-    config.forEach(function (item, i, config) {
-        chokidar.watch(item.path, {
-            ignored: '',
-            persistent: true,
-            ignoreInitial: true
-        }).on('all', function(event, path) {
-            gulp.start(item.name);
-        }) .on('error', function(error) { log('Error happened', error); });
-    });
-});
 
 // Compile Swig
 gulp.task('templates', function() {
     return gulp.src(src.pages)
-        .pipe(swig({
-            defaults: { cache: false, locals: data }
-        }))
+        //.pipe(data( require('./' + src.json) ))
+        .pipe(swig(opts))
         .on('error', notify.onError(function (error) {
             return '\nError! Look in the console for details.\n' + error;
         }))
@@ -76,19 +82,41 @@ gulp.task('templates', function() {
         .pipe(browserSync.reload({stream:true}));
 });
 
-// Compile LESS
+// Compile LESS|SASS
 gulp.task('less', function () {
     return gulp.src(src.less)
-        .pipe(concat('style.less'))
+        .pipe(concat('template.less'))
+        .pipe(sourcemaps.init())
         .pipe(less())
         .on('error', notify.onError(function (error) {
             return '\nError! Look in the console for details.\n' + error;
         }))
-        .pipe(prefix('Last 15 version'))
-        //.pipe(minifyCSS())
-        .pipe(rename('template.css'))
+        .pipe(rename(src.cssmain))
+        .pipe(sourcemaps.write())
         .pipe(gulp.dest(src.css))
         .pipe(browserSync.reload({stream:true}));
+});
+gulp.task('sass', function () {
+    return gulp.src(src.scss)
+        .pipe(concat('template.scss'))
+        .pipe(sourcemaps.init())
+        .pipe(sass())
+        .on('error', notify.onError(function (error) {
+            return '\nError! Look in the console for details.\n' + error;
+        }))
+        .pipe(rename(src.cssmain))
+        .pipe(sourcemaps.write())
+        .pipe(gulp.dest(src.css))
+        .pipe(browserSync.reload({stream:true}));
+});
+
+// Compress CSS
+gulp.task('compress-css', function () {
+    return gulp.src(src.css + '/' + src.cssmain)
+        .pipe(prefix('Last 15 version'))
+        .pipe(minifyCSS())
+        .pipe(rename(src.cssmaino))
+        .pipe(gulp.dest(src.css));
 });
 
 // Compile JS
@@ -102,6 +130,67 @@ gulp.task('js', function () {
         .pipe(browserSync.reload({stream:true}));
 });
 
-gulp.task('build', ['less', 'templates']);
+// Compress images
+gulp.task('compress-images', function () {
+    gulp.src(src.images)
+        .pipe(imagemin({
+            progressive: true,
+            svgoPlugins: [{removeViewBox: false}],
+            use: [pngquant()],
+            interlaced: true
+        }))
+        .pipe(gulp.dest(src.images));
+});
 
-gulp.task('default', ['build', 'server']);
+// Clean
+gulp.task('clean', function() {
+    return gulp.src(src.html, { read: false })
+        .pipe(rimraf({ force: true }));
+});
+
+// JShint
+gulp.task('jshint', function() {
+    return gulp.src(src.js)
+        .pipe(jshint())
+        .pipe(jshint.reporter('jshint-stylish'))
+        .on('error', notify.onError(function (error) {
+            return '\nError! Look in the console for details.\n' + error;
+        }));
+});
+
+// Build
+gulp.task('build-less', ['less', 'jshint', 'templates']);
+gulp.task('build-sass', ['sass', 'jshint', 'templates']);
+
+// Servers
+gulp.task('server', ['less'], function() {
+    browserSync({
+        server: htdocs
+    });
+    config.forEach(function (item, i, config) {
+        chokidar.watch(item.path, {
+            ignored: '',
+            persistent: true,
+            ignoreInitial: true
+        }).on('all', function(event, path) {
+            gulp.start(item.name);
+        }) .on('error', function(error) { log('Error happened', error); });
+    });
+});
+gulp.task('server-less',  function() {
+    chokidar.watch(src.less, {ignored: /[\/\\]\./})
+        .on('all', function(event, path) {gulp.start('less');})
+        .on('error', notify.onError(function (error) {
+            return '\nError! Look in the console for details.\n' + error;
+        }));
+});
+gulp.task('server-sass',  function() {
+    chokidar.watch(src.sass, {ignored: /[\/\\]\./})
+        .on('all', function(event, path) {gulp.start('sass');})
+        .on('error', notify.onError(function (error) {
+            return '\nError! Look in the console for details.\n' + error;
+        }));
+});
+
+// Default
+gulp.task('default', ['build-less', 'server']);
