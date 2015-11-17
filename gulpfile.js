@@ -19,8 +19,9 @@ var gulp        = require('gulp'),
     jshint      = require('gulp-jshint'),
     replace     = require('gulp-replace-task'),
     args        = require('yargs').argv,
-    gulpif      = require('gulp-if')
-    ;
+    gulpif      = require('gulp-if'),
+    glreplace   = require('gulp-replace');
+
 
 var htdocs = 'web',
     markup = 'markup',
@@ -55,7 +56,7 @@ var htdocs = 'web',
         data:     markup + '/data.js',
         json:     markup + '/data.json',
         html:     htdocs,
-        tpl:      htdocs + '/components/markup-templates/templates'
+        tpl:      htdocs + '/components/markup-templates/templates',
     },
     config = [
         {path: src.less,  name: 'less'},
@@ -206,13 +207,22 @@ gulp.task('clone', function () {
     // Path to templates
     var tpl = args.tpl || src.tpl,
         from = args.from,
+        ver = args.ver,
         to = args.to || from,
-        isRenameFiles = false;
+        isRenameFiles = false,
+        regex;
 
-    if ( from == to ) {
+    if ( from != to ) {
         isRenameFiles = true;
     }
-    return gulp.src(tpl + from + '/less/*.less')
-        .pipe(gulpif(isRenameFiles, rename(to)))
-        .pipe(gulp.dest(src.css));
+
+    return gulp.src(tpl + '/' + from + '/' + ver + '/less/' + from + '.less')
+        .pipe(gulpif(isRenameFiles, rename(function (path) {
+                path.dirname += "/less";
+                path.basename = to;
+                path.extname = ".less"
+            }))
+        )
+        .pipe(gulpif(isRenameFiles, glreplace(from, to)))
+        .pipe(gulp.dest(htdocs +'/less/modules/' + to));
 });
