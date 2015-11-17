@@ -20,8 +20,9 @@ var gulp        = require('gulp'),
     replace     = require('gulp-replace-task'),
     args        = require('yargs').argv,
     gulpif      = require('gulp-if'),
-    glreplace   = require('gulp-replace');
-
+    glreplace   = require('gulp-replace'),
+    fs          = require('fs'),
+    insertLines = require('gulp-insert-lines');
 
 var htdocs = 'web',
     markup = 'markup',
@@ -57,6 +58,7 @@ var htdocs = 'web',
         json:     markup + '/data.json',
         html:     htdocs,
         tpl:      htdocs + '/components/markup-templates/templates',
+        modules:  htdocs +'/less/modules/'
     },
     config = [
         {path: src.less,  name: 'less'},
@@ -204,25 +206,39 @@ gulp.task('default', ['build-less', 'server']);
 // Clone
 gulp.task('clone', function () {
 
-    // Path to templates
     var tpl = args.tpl || src.tpl,
         from = args.from,
         ver = args.ver,
         to = args.to || from,
-        isRenameFiles = false,
-        regex;
+        page = args.page || 'index',
+        isRenameFiles = false;
 
     if ( from != to ) {
         isRenameFiles = true;
     }
 
-    return gulp.src(tpl + '/' + from + '/' + ver + '/less/' + from + '.less')
+    gulp.src(tpl + '/' + from + '/' + ver + '/less/*.less')
         .pipe(gulpif(isRenameFiles, rename(function (path) {
-                path.dirname += "/less";
-                path.basename = to;
-                path.extname = ".less"
+                path.basename = path.basename.replace(from, to);
+                path.extname  = ".less"
             }))
         )
         .pipe(gulpif(isRenameFiles, glreplace(from, to)))
-        .pipe(gulp.dest(htdocs +'/less/modules/' + to));
+        .pipe(gulp.dest(src.modules + to));
+
+    var html = '\n' + fs.readFileSync(tpl + '/' + from + '/' + ver + '/' + from + '.twig', 'utf8');
+
+    if (isRenameFiles) {
+        html = html.replace(new RegExp(from, 'g'), to);
+    }
+
+
+    fs.appendFile( markup + '/pages/' + page + '.twig', html, function(err) {
+        if(err) {
+            return console.log(err);
+        }
+
+        console.log("The file was saved!");
+    });
+
 });
