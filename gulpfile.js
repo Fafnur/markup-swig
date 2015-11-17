@@ -16,7 +16,10 @@ var gulp        = require('gulp'),
     imagemin    = require('gulp-imagemin'),
     pngquant    = require('imagemin-pngquant'),
     sourcemaps  = require('gulp-sourcemaps'),
-    jshint      = require('gulp-jshint')
+    jshint      = require('gulp-jshint'),
+    replace     = require('gulp-replace-task'),
+    args        = require('yargs').argv,
+    gulpif      = require('gulp-if')
     ;
 
 var htdocs = 'web',
@@ -51,7 +54,8 @@ var htdocs = 'web',
         images:   htdocs + '/images',
         data:     markup + '/data.js',
         json:     markup + '/data.json',
-        html:     htdocs
+        html:     htdocs,
+        tpl:      htdocs + '/components/markup-templates/templates'
     },
     config = [
         {path: src.less,  name: 'less'},
@@ -194,3 +198,21 @@ gulp.task('server-sass',  function() {
 
 // Default
 gulp.task('default', ['build-less', 'server']);
+
+
+// Clone
+gulp.task('clone', function () {
+
+    // Path to templates
+    var tpl = args.tpl || src.tpl,
+        from = args.from,
+        to = args.to || from,
+        isRenameFiles = false;
+
+    if ( from == to ) {
+        isRenameFiles = true;
+    }
+    return gulp.src(tpl + from + '/less/*.less')
+        .pipe(gulpif(isRenameFiles, rename(to)))
+        .pipe(gulp.dest(src.css));
+});
