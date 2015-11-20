@@ -4,7 +4,7 @@ var gulp        = require('gulp'),
     swig        = require('gulp-swig'),
     chokidar    = require('chokidar'),
     less        = require('gulp-less'),
-    sass        = require('gulp-sass'),
+    //sass        = require('gulp-sass'),
     rename      = require('gulp-rename'),
     minifyCSS   = require('gulp-minify-css'),
     prefix      = require('gulp-autoprefixer'),
@@ -68,12 +68,9 @@ var htdocs = 'web',
     ];
 
 var opts = {
-    //load_json: true,
-    setup: function(swig) {
-        swig.setDefaults({
-            cache: false,
-            locals: requireWC('./' + src.data, require)
-        });
+    defaults: {
+        cache: false,
+        locals: requireWC('./' + src.data, require)
     }
 };
 
@@ -103,19 +100,19 @@ gulp.task('less', function () {
         .pipe(gulp.dest(src.css))
         .pipe(browserSync.reload({stream:true}));
 });
-gulp.task('sass', function () {
-    return gulp.src(src.scss)
-        .pipe(concat('template.scss'))
-        .pipe(sourcemaps.init())
-        .pipe(sass())
-        .on('error', notify.onError(function (error) {
-            return '\nError! Look in the console for details.\n' + error;
-        }))
-        .pipe(rename(src.cssmain))
-        .pipe(sourcemaps.write())
-        .pipe(gulp.dest(src.css))
-        .pipe(browserSync.reload({stream:true}));
-});
+//gulp.task('sass', function () {
+//    return gulp.src(src.scss)
+//        .pipe(concat('template.scss'))
+//        .pipe(sourcemaps.init())
+//        .pipe(sass())
+//        .on('error', notify.onError(function (error) {
+//            return '\nError! Look in the console for details.\n' + error;
+//        }))
+//        .pipe(rename(src.cssmain))
+//        .pipe(sourcemaps.write())
+//        .pipe(gulp.dest(src.css))
+//        .pipe(browserSync.reload({stream:true}));
+//});
 
 // Compress CSS
 gulp.task('compress-css', function () {
@@ -167,7 +164,7 @@ gulp.task('jshint', function() {
 
 // Build
 gulp.task('build-less', ['less', 'jshint', 'templates']);
-gulp.task('build-sass', ['sass', 'jshint', 'templates']);
+//gulp.task('build-sass', ['sass', 'jshint', 'templates']);
 
 // Servers
 gulp.task('server', ['less'], function() {
@@ -191,13 +188,13 @@ gulp.task('server-less',  function() {
             return '\nError! Look in the console for details.\n' + error;
         }));
 });
-gulp.task('server-sass',  function() {
-    chokidar.watch(src.sass, {ignored: /[\/\\]\./})
-        .on('all', function(event, path) {gulp.start('sass');})
-        .on('error', notify.onError(function (error) {
-            return '\nError! Look in the console for details.\n' + error;
-        }));
-});
+//gulp.task('server-sass',  function() {
+//    chokidar.watch(src.sass, {ignored: /[\/\\]\./})
+//        .on('all', function(event, path) {gulp.start('sass');})
+//        .on('error', notify.onError(function (error) {
+//            return '\nError! Look in the console for details.\n' + error;
+//        }));
+//});
 
 // Default
 gulp.task('default', ['build-less', 'server']);
