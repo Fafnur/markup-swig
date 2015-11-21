@@ -19,10 +19,11 @@ var gulp        = require('gulp'),
     jshint      = require('gulp-jshint'),
     replace     = require('gulp-replace-task'),
     args        = require('yargs').argv,
-    gulpif      = require('gulp-if'),
     glreplace   = require('gulp-replace'),
     fs          = require('fs'),
-    insertLines = require('gulp-insert-lines');
+    yaml        = require('js-yaml'),
+    vinylPaths  = require('vinyl-paths'),
+    file        = require('gulp-file');
 
 var htdocs = 'web',
     markup = 'markup',
@@ -200,42 +201,69 @@ gulp.task('server-less',  function() {
 gulp.task('default', ['build-less', 'server']);
 
 
+
 // Clone
 gulp.task('clone', function () {
 
-    var tpl = args.tpl || src.tpl,
-        from = args.from,
-        ver = args.ver,
-        to = args.to || from,
-        page = args.page || 'index',
-        isRenameFiles = false;
+    var components = args.components || src.tpl,
+        from       = args.from,
+        ver        = args.ver,
+        to         = args.to || from,
+        page       = args.page || 'index',
+        basePath   = components + '/' + from + '/' + ver,
+        config     = yaml.safeLoad(fs.readFileSync(basePath + '/config.yml', 'utf8')),
+        tpl        = config.tpl || from;
 
-    if ( from != to ) {
-        isRenameFiles = true;
-    }
-
-    gulp.src(tpl + '/' + from + '/' + ver + '/less/*.less')
-        .pipe(gulpif(isRenameFiles, rename(function (path) {
-                path.basename = path.basename.replace(from, to);
+    try {
+        gulp.src(basePath + '/less/*.less')
+            .pipe(rename(function (path) {
+                path.basename = path.basename.replace(tpl, to);
                 path.extname  = ".less"
             }))
-        )
-        .pipe(gulpif(isRenameFiles, glreplace(from, to)))
-        .pipe(gulp.dest(src.modules + to));
-
-    var html = '\n' + fs.readFileSync(tpl + '/' + from + '/' + ver + '/' + from + '.twig', 'utf8');
-
-    if (isRenameFiles) {
-        html = html.replace(new RegExp(from, 'g'), to);
+            .pipe(glreplace(tpl, to))
+            .pipe(gulp.dest(src.modules + to))
+        ;
+        gulp.src(basePath + '/twig/*.twig')
+            .pipe(glreplace(tpl, to))
+            .pipe(vinylPaths(function (path) {
+                fs.appendFile( markup + '/pages/' + page + '.twig', fs.readFileSync(path, 'utf8') );
+                return Promise.resolve();
+            }))
+        ;
+    } catch (e) {
+        console.log(e);
     }
+});
 
+// BEM
+gulp.task('bem', function () {
+    var block     = args.b,
+        elements  = args.e.split(','),
+        modifiers = args.m.split(','),
+        page      = args.page || 'index',
+        path      = args.path || block,
+        filename  = block + '.less',
+        output    = src.modules + '/' + path,
+        css       = '.' + block + ' {\n',
+        html      = '\n<div class="' + block + '">\n',
+        i = 0;
 
-    fs.appendFile( markup + '/pages/' + page + '.twig', html, function(err) {
-        if(err) {
-            return console.log(err);
+    try {
+        for(i = 0; i < elements.length; i++) {
+            css  = css  + '    &__' + elements[i] + ' {}\n';
+            html = html + '    <div class="' + block + '__' + elements[i] + '"></div>\n';
         }
+        for(i = 0; i < modifiers.length; i++) {
+            css = css + '    &_' + modifiers[i] + ' {}\n';
+        }
+        css = css + '}';
+        html = html + '</div>';
 
-        console.log("The file was saved!");
-    });
+        file(filename, css, { src: true })
+            .pipe(gulp.dest(output));
 
+        fs.appendFile( markup + '/pages/' + page + '.twig', html);
+    } catch (e) {
+        console.log(e);
+    }
 });
