@@ -64,7 +64,8 @@ gulp
 gulp bem --b name-block --e element,element2,element3 --m modify1,modify2
 ```
 
-где
+где:
+
 --b    - название блока
 
 --e    - название элементов

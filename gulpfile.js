@@ -200,7 +200,19 @@ gulp.task('server-less',  function() {
 // Default
 gulp.task('default', ['build-less', 'server']);
 
-
+function toCamelCase(str) {
+    // Lower cases the string
+    return str.toLowerCase()
+        // Replaces any - or _ characters with a space
+        .replace( /[-_]+/g, ' ')
+        // Removes any non alphanumeric characters
+        .replace( /[^\w\s]/g, '')
+        // Uppercases the first character in each group immediately following a space
+        // (delimited by spaces)
+        .replace( / (.)/g, function($1) { return $1.toUpperCase(); })
+        // Removes spaces
+        .replace( / /g, '' );
+}
 
 // Clone
 gulp.task('clone', function () {
@@ -215,6 +227,7 @@ gulp.task('clone', function () {
         tpl        = config.tpl || from;
 
     try {
+        // Move and rename less files
         gulp.src(basePath + '/less/*.less')
             .pipe(rename(function (path) {
                 path.basename = path.basename.replace(tpl, to);
@@ -223,10 +236,31 @@ gulp.task('clone', function () {
             .pipe(glreplace(tpl, to))
             .pipe(gulp.dest(src.modules + to))
         ;
+        // Rename and insert html from twig files
         gulp.src(basePath + '/twig/*.twig')
+            .pipe(vinylPaths(function (path) {
+                fs.appendFile( markup + '/pages/' + page + '.twig', '\n' + fs.readFileSync(path, 'utf8').replace(new RegExp(tpl, 'g'), to) );
+                return Promise.resolve();
+            }))
+        ;
+        // Insert data
+        gulp.src(basePath + '/data/*.js')
+            .pipe(vinylPaths(function (path) {
+                var content = '\n' + fs.readFileSync(path, 'utf8').replace(tpl, toCamelCase(to));
+                content = content.replace(new RegExp(tpl, 'g'), to);
+                fs.appendFile( markup + '/data.js', content );
+                return Promise.resolve();
+            }))
+        ;
+        // Move images
+        gulp.src(basePath + '/images/*')
+            .pipe(gulp.dest(src.images + '/' + to))
+        ;
+        // Rename and insert js
+        gulp.src(basePath + '/js/*.js')
             .pipe(glreplace(tpl, to))
             .pipe(vinylPaths(function (path) {
-                fs.appendFile( markup + '/pages/' + page + '.twig', fs.readFileSync(path, 'utf8') );
+                fs.appendFile( markup + '/pages/' + page + '.twig', '\n<script>\n' + fs.readFileSync(path, 'utf8').replace(new RegExp(tpl, 'g'), to) +'\n</script>' );
                 return Promise.resolve();
             }))
         ;
@@ -243,24 +277,23 @@ gulp.task('bem', function () {
         page      = args.page || 'index',
         path      = args.path || block,
         filename  = block + '.less',
-        output    = src.modules + '/' + path,
-        css       = '.' + block + ' {\n',
+        less       = '.' + block + ' {\n',
         html      = '\n<div class="' + block + '">\n',
         i = 0;
 
     try {
         for(i = 0; i < elements.length; i++) {
-            css  = css  + '    &__' + elements[i] + ' {}\n';
+            less  = css  + '    &__' + elements[i] + ' {}\n';
             html = html + '    <div class="' + block + '__' + elements[i] + '"></div>\n';
         }
         for(i = 0; i < modifiers.length; i++) {
-            css = css + '    &_' + modifiers[i] + ' {}\n';
+            less = css + '    &_' + modifiers[i] + ' {}\n';
         }
-        css = css + '}';
+        less = less + '}';
         html = html + '</div>';
 
-        file(filename, css, { src: true })
-            .pipe(gulp.dest(output));
+        file(filename, less, { src: true })
+            .pipe(gulp.dest(src.modules + '/' + path));
 
         fs.appendFile( markup + '/pages/' + page + '.twig', html);
     } catch (e) {
