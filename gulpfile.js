@@ -246,8 +246,8 @@ gulp.task('clone', function () {
         // Insert data
         gulp.src(basePath + '/data/*.js')
             .pipe(vinylPaths(function (path) {
-                var content = '\n' + fs.readFileSync(path, 'utf8').replace(tpl, toCamelCase(to));
-                content = content.replace(new RegExp(tpl, 'g'), to);
+                var content = '\n' + fs.readFileSync(path, 'utf8').replace(new RegExp(tpl, 'g'), toCamelCase(to));
+                content = content.replace(new RegExp('images/' + toCamelCase(to), 'g'), 'images/' + to);
                 fs.appendFile( markup + '/data.js', content );
                 return Promise.resolve();
             }))
