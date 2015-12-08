@@ -272,8 +272,8 @@ gulp.task('clone', function () {
 // BEM
 gulp.task('bem', function () {
     var block     = args.b,
-        elements  = args.e.split(','),
-        modifiers = args.m.split(','),
+        elements  = args.e,
+        modifiers = args.m,
         page      = args.page || 'index',
         path      = args.path || block,
         filename  = block + '.less',
@@ -281,13 +281,25 @@ gulp.task('bem', function () {
         html      = '\n<div class="' + block + '">\n',
         i = 0;
 
+    if(elements) {
+        elements  = elements.split(',');
+    } else {
+        elements = [];
+    }
+
+    if(modifiers) {
+        modifiers  = modifiers.split(',');
+    } else {
+        modifiers = [];
+    }
+
     try {
         for(i = 0; i < elements.length; i++) {
-            less  = css  + '    &__' + elements[i] + ' {}\n';
+            less  = less  + '    &__' + elements[i] + ' {}\n';
             html = html + '    <div class="' + block + '__' + elements[i] + '"></div>\n';
         }
         for(i = 0; i < modifiers.length; i++) {
-            less = css + '    &_' + modifiers[i] + ' {}\n';
+            less = less + '    &_' + modifiers[i] + ' {}\n';
         }
         less = less + '}';
         html = html + '</div>';
