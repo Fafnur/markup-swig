@@ -10,16 +10,16 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>{% block page_title %}Gulp & Swig{% endblock %}</title>
-    <meta name="description" content="gulp & swig">
-    <meta name="keywords" content="gulp & swig">
+    <title>{% block page_title %}Markup Swig{% endblock %}</title>
+    <meta name="description" content="Markup swig">
+    <meta name="keywords" content="Markup swig">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}"/>
     <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}"/>
 
     {% block stylesheet_all %}
         <link rel="stylesheet" href="{{ asset('components/bootstrap/dist/css/bootstrap.min.css') }}">
-         {% block stylesheet %}{% endblock %}
+         {% block stylesheets %}{% endblock %}
         <link rel="stylesheet" href="{{ asset('css/template.css') }}">
     {% endblock %}
 
@@ -90,7 +90,7 @@
     <script src="{{ asset('components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('js/plugins.js') }}"></script>
     <script src="{{ asset('js/main.js') }}"></script>
-    {% block javascript %}{% endblock %}
+    {% block javascripts %}{% endblock %}
 {% endblock %}
 {% endblock %}
 </body>

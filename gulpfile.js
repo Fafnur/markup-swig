@@ -4,7 +4,6 @@ var gulp        = require('gulp'),
     swig        = require('gulp-swig'),
     chokidar    = require('chokidar'),
     less        = require('gulp-less'),
-    //sass        = require('gulp-sass'),
     rename      = require('gulp-rename'),
     minifyCSS   = require('gulp-minify-css'),
     prefix      = require('gulp-autoprefixer'),
@@ -15,7 +14,7 @@ var gulp        = require('gulp'),
     data        = require('gulp-data'),
     imagemin    = require('gulp-imagemin'),
     pngquant    = require('imagemin-pngquant'),
-    sourcemaps  = require('gulp-sourcemaps'),
+//sourcemaps  = require('gulp-sourcemaps'),
     jshint      = require('gulp-jshint'),
     replace     = require('gulp-replace-task'),
     args        = require('yargs').argv,
@@ -38,16 +37,6 @@ var htdocs = 'web',
             htdocs + '/less/modules/**/*.less',
             htdocs + '/less/modules/**/**/*.less'
         ],
-        sass: [
-            htdocs + '/less/vars/variables.scss',
-            htdocs + '/less/vars/mixin.scss',
-            htdocs + '/less/common/*.scss',
-            htdocs + '/less/libs/**/*.scss',
-            htdocs + '/less/libs/**/*.scss',
-            htdocs + '/less/snippets/**/*.scss',
-            htdocs + '/less/modules/**/*.scss',
-            htdocs + '/less/modules/**/**/*.scss'
-        ],
         swig:     markup + '/**/*.twig',
         pages:    markup + '/pages/*.twig',
         css:      htdocs + '/css',
@@ -56,7 +45,6 @@ var htdocs = 'web',
         js:       htdocs + '/js',
         images:   htdocs + '/images',
         data:     markup + '/data.js',
-        json:     markup + '/data.json',
         html:     htdocs,
         tpl:      htdocs + '/components/markup-templates/templates',
         modules:  htdocs +'/less/modules/'
@@ -65,7 +53,7 @@ var htdocs = 'web',
         {path: src.less,  name: 'less'},
         {path: src.swig,  name: 'templates'},
         {path: src.pages, name: 'templates'},
-        {path: src.json, name: 'templates'}
+        {path: src.data,  name: 'templates'}
     ];
 
 var opts = {
@@ -87,33 +75,20 @@ gulp.task('templates', function() {
         .pipe(browserSync.reload({stream:true}));
 });
 
-// Compile LESS|SASS
+// Compile LESS
 gulp.task('less', function () {
     return gulp.src(src.less)
         .pipe(concat('template.less'))
-        .pipe(sourcemaps.init())
+        //.pipe(sourcemaps.init())
         .pipe(less())
         .on('error', notify.onError(function (error) {
             return '\nError! Look in the console for details.\n' + error;
         }))
         .pipe(rename(src.cssmain))
-        .pipe(sourcemaps.write())
+        //.pipe(sourcemaps.write())
         .pipe(gulp.dest(src.css))
         .pipe(browserSync.reload({stream:true}));
 });
-//gulp.task('sass', function () {
-//    return gulp.src(src.scss)
-//        .pipe(concat('template.scss'))
-//        .pipe(sourcemaps.init())
-//        .pipe(sass())
-//        .on('error', notify.onError(function (error) {
-//            return '\nError! Look in the console for details.\n' + error;
-//        }))
-//        .pipe(rename(src.cssmain))
-//        .pipe(sourcemaps.write())
-//        .pipe(gulp.dest(src.css))
-//        .pipe(browserSync.reload({stream:true}));
-//});
 
 // Compress CSS
 gulp.task('compress-css', function () {
@@ -189,19 +164,11 @@ gulp.task('server-less',  function() {
             return '\nError! Look in the console for details.\n' + error;
         }));
 });
-//gulp.task('server-sass',  function() {
-//    chokidar.watch(src.sass, {ignored: /[\/\\]\./})
-//        .on('all', function(event, path) {gulp.start('sass');})
-//        .on('error', notify.onError(function (error) {
-//            return '\nError! Look in the console for details.\n' + error;
-//        }));
-//});
 
 // Default
 gulp.task('default', ['build-less', 'server']);
 
 function toCamelCase(str) {
-    // Lower cases the string
     return str.toLowerCase()
         // Replaces any - or _ characters with a space
         .replace( /[-_]+/g, ' ')
@@ -214,10 +181,19 @@ function toCamelCase(str) {
         .replace( / /g, '' );
 }
 
+function replaceTwigTags(str, to) {
+    return str.replace(/\{\{[\s\S]*?\}\}/g, function (str) {
+        return str.replace(new RegExp(to, 'g'), toCamelCase(to));
+    }).replace(/\{\%[\s\S]*?\%\}/g, function (str) {
+        return str.replace(new RegExp(to, 'g'), toCamelCase(to));
+    }).replace(/\{\#[\s\S]*?\#\}/g, function (str) {
+        return str.replace(new RegExp(to, 'g'), toCamelCase(to));
+    });
+}
 // Clone
 gulp.task('clone', function () {
 
-    var components = args.components || src.tpl,
+    var components = src.tpl,
         from       = args.from,
         ver        = args.ver,
         to         = args.to || from,
@@ -239,16 +215,20 @@ gulp.task('clone', function () {
         // Rename and insert html from twig files
         gulp.src(basePath + '/twig/*.twig')
             .pipe(vinylPaths(function (path) {
-                fs.appendFile( markup + '/pages/' + page + '.twig', '\n' + fs.readFileSync(path, 'utf8').replace(new RegExp(tpl, 'g'), to) );
+                var data = fs.readFileSync(path, 'utf8').replace(new RegExp(tpl, 'g'), to);
+                data = replaceTwigTags(data,to);
+                fs.appendFile( markup + '/pages/' + page + '.twig', '\n' + data);
                 return Promise.resolve();
             }))
         ;
         // Insert data
         gulp.src(basePath + '/data/*.js')
             .pipe(vinylPaths(function (path) {
-                var content = '\n' + fs.readFileSync(path, 'utf8').replace(new RegExp(tpl, 'g'), toCamelCase(to));
-                content = content.replace(new RegExp('images/' + toCamelCase(to), 'g'), 'images/' + to);
-                fs.appendFile( markup + '/data.js', content );
+                var content = fs.readFileSync(path, 'utf8').replace(new RegExp(toCamelCase(tpl), 'g'), toCamelCase(to));
+                content = content.replace( /\'[\s\S]*?\'/g ,function (str) {
+                    return str.replace(new RegExp(toCamelCase(to), 'g'), to);
+                });
+                fs.appendFile( markup + '/data.js', '\n' +  content );
                 return Promise.resolve();
             }))
         ;
@@ -260,7 +240,10 @@ gulp.task('clone', function () {
         gulp.src(basePath + '/js/*.js')
             .pipe(glreplace(tpl, to))
             .pipe(vinylPaths(function (path) {
-                fs.appendFile( markup + '/pages/' + page + '.twig', '\n<script>\n' + fs.readFileSync(path, 'utf8').replace(new RegExp(tpl, 'g'), to) +'\n</script>' );
+                var data = fs.readFileSync(path, 'utf8')
+                    .replace(new RegExp(tpl, 'g'), to)
+                    .replace(new RegExp(toCamelCase(tpl), 'g'), toCamelCase(to));
+                fs.appendFile( markup + '/pages/' + page + '.twig', '\n<script>\n' + data +'\n</script>' );
                 return Promise.resolve();
             }))
         ;
@@ -277,9 +260,9 @@ gulp.task('bem', function () {
         page      = args.page || 'index',
         path      = args.path || block,
         filename  = block + '.less',
-        less       = '.' + block + ' {\n',
+        less      = '.' + block + ' {\n',
         html      = '\n<div class="' + block + '">\n',
-        i = 0;
+        i;
 
     if(elements) {
         elements  = elements.split(',');
@@ -295,7 +278,7 @@ gulp.task('bem', function () {
 
     try {
         for(i = 0; i < elements.length; i++) {
-            less  = less  + '    &__' + elements[i] + ' {}\n';
+            less = less  + '    &__' + elements[i] + ' {}\n';
             html = html + '    <div class="' + block + '__' + elements[i] + '"></div>\n';
         }
         for(i = 0; i < modifiers.length; i++) {
