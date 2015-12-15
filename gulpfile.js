@@ -14,7 +14,7 @@ var gulp        = require('gulp'),
     data        = require('gulp-data'),
     imagemin    = require('gulp-imagemin'),
     pngquant    = require('imagemin-pngquant'),
-//sourcemaps  = require('gulp-sourcemaps'),
+    //sourcemaps  = require('gulp-sourcemaps'),
     jshint      = require('gulp-jshint'),
     replace     = require('gulp-replace-task'),
     args        = require('yargs').argv,
@@ -22,7 +22,8 @@ var gulp        = require('gulp'),
     fs          = require('fs'),
     yaml        = require('js-yaml'),
     vinylPaths  = require('vinyl-paths'),
-    file        = require('gulp-file');
+    file        = require('gulp-file'),
+    change      = require('gulp-change');
 
 var htdocs = 'web',
     markup = 'markup',
@@ -59,18 +60,41 @@ var htdocs = 'web',
         {path: src.data,  name: 'templates'}
     ];
 
+//function symfonyLoader() {
+//    return {
+//        resolve: function (to, from) {
+//            console.log('resolve',to, from);
+//            // process.env.INIT_CWD
+//            return path.resolve(from, to);
+//        },
+//        load: function (pathname, cb) {
+//            console.log('load', to, from);
+//           return pathname ;
+//        }
+//    };
+//}
+
 var opts = {
     defaults: {
+        //loader: symfonyLoader(),
         cache: false,
         locals: requireWC('./' + src.data, require)
     }
 };
 
+function performChange(content) {
+    console.log(content.replace(new RegExp('include \'', 'g'), 'include \'..\/'));
+    return content.replace(new RegExp('include \'', 'g'), 'include \'..\/');
+}
+
 // Compile Swig
 gulp.task('templates', function() {
     return gulp.src(src.pages)
-        //.pipe(data( require('./' + src.json) ))
+        //.pipe(change(performChange))
         .pipe(swig(opts))
+        .pipe(rename(function (path) {
+            path.basename = path.basename.replace(/\..+$/, '');
+        }))
         .on('error', notify.onError(function (error) {
             return '\nError! Look in the console for details.\n' + error;
         }))
@@ -142,7 +166,7 @@ gulp.task('jshint', function() {
 });
 
 // Build
-gulp.task('build-less', ['less', 'jshint', 'templates']);
+gulp.task('build-less', ['less', 'templates']);
 //gulp.task('build-sass', ['sass', 'jshint', 'templates']);
 
 // Servers
