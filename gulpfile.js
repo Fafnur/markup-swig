@@ -22,8 +22,7 @@ var gulp        = require('gulp'),
     fs          = require('fs'),
     yaml        = require('js-yaml'),
     vinylPaths  = require('vinyl-paths'),
-    file        = require('gulp-file'),
-    change      = require('gulp-change');
+    file        = require('gulp-file');
 
 var htdocs = 'web',
     markup = 'markup',
@@ -60,19 +59,64 @@ var htdocs = 'web',
         {path: src.data,  name: 'templates'}
     ];
 
-//function symfonyLoader() {
-//    return {
-//        resolve: function (to, from) {
-//            console.log('resolve',to, from);
-//            // process.env.INIT_CWD
-//            return path.resolve(from, to);
-//        },
-//        load: function (pathname, cb) {
-//            console.log('load', to, from);
-//           return pathname ;
+//function symfonyLoader(basepath, encoding) {
+//    var ret = {};
+//
+//    encoding = encoding || 'utf8';
+//    basepath = (basepath) ? path.normalize(basepath) : null;
+//    var basedir = process.env.INIT_CWD;
+//    var isWin = /^win/.test(process.platform),
+//        sep = '/';
+//    if(isWin) {
+//        sep = '\\';
+//    }
+//    var markup = sep + 'markup';
+//    var pages = sep + 'pages';
+//
+//    var root = process.env.INIT_CWD;
+//
+//    ret.resolve = function (to, from) {
+//        if (basepath) {
+//            from = basepath;
+//        } else {
+//            from = (from) ? path.dirname(from) : process.cwd();
 //        }
+//        return path.resolve(from, to);
 //    };
+//
+//    ret.load = function (identifier, cb) {
+//        var x = identifier.replace(basedir + markup + pages,''), arr;
+//        console.log(x);
+//        if(isWin) {
+//            arr = x.match(/\\/g);
+//        } else {
+//            arr = x.match(/\//g);
+//        }
+//
+//        console.log(arr);
+//        if(arr.length > 1) {
+//
+//            identifier = identifier.replace(basedir + markup + pages ,basedir + markup);
+//            console.log(identifier);
+//        }
+//
+//        if (!fs || (cb && !fs.readFile) || !fs.readFileSync) {
+//            throw new Error('Unable to find file ' + identifier + ' because there is no filesystem to read from.');
+//        }
+//
+//        c = ret.resolve(identifier);
+//
+//        if (cb) {
+//            fs.readFile(identifier, encoding, cb);
+//            return;
+//        }
+//
+//        return fs.readFileSync(identifier, encoding);
+//    };
+//
+//    return ret;
 //}
+
 
 var opts = {
     defaults: {
@@ -82,21 +126,15 @@ var opts = {
     }
 };
 
-function performChange(content) {
-    console.log(content.replace(new RegExp('include \'', 'g'), 'include \'..\/'));
-    return content.replace(new RegExp('include \'', 'g'), 'include \'..\/');
-}
-
 // Compile Swig
 gulp.task('templates', function() {
     return gulp.src(src.pages)
-        //.pipe(change(performChange))
         .pipe(swig(opts))
-        .pipe(rename(function (path) {
-            path.basename = path.basename.replace(/\..+$/, '');
-        }))
         .on('error', notify.onError(function (error) {
             return '\nError! Look in the console for details.\n' + error;
+        }))
+        .pipe(rename(function (path) {
+            path.basename = path.basename.replace(/\..+$/, '');
         }))
         .pipe(gulp.dest(src.html))
         .pipe(browserSync.reload({stream:true}));
