@@ -31,7 +31,7 @@
 
     {% block stylesheet_all %}
         <link rel="stylesheet" href="{{ asset('components/bootstrap/dist/css/bootstrap.min.css') }}">
-         {% block stylesheets %}{% endblock %}
+        {% block stylesheets %}{% endblock %}
         <link rel="stylesheet" href="{{ asset('css/template.css') }}">
     {% endblock %}
 
@@ -39,9 +39,7 @@
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
-
 </head>
-
 <body>
 {% block body %}
 
@@ -61,7 +59,7 @@
             {% block header %}
                 <header class="header">
                     <div class="container">
-                        <a href="#home" class="logo">Тут мог быть ваш логотип</a>
+                        <a href="index.html" class="logo">Тут мог быть ваш логотип</a>
                     </div>
                 </header>
             {% endblock %}
@@ -82,27 +80,31 @@
 {% endblock %}
 
 {% block page_footer %}
-<footer class="page-footer">
+    <footer class="page-footer">
 
-    {% block footer %}
-    <div class="footer">
-        <div class="container">
-            Футер прижатый к низу.
-        </div>
-    </div>
-    {% endblock %}
+        {% block footer %}
+            <div class="footer">
+                <div class="container">
+                    Футер прижатый к низу.
+                </div>
+            </div>
+        {% endblock %}
 
-</footer>
+    </footer>
+{% endblock %}
+
+{% block modals_all %}
+    {% block modals %}{% endblock %}
 {% endblock %}
 
 {% block javascript_all %}
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-    <script>window.jQuery || document.write("<script src=\"{{ asset('components/jquery/dist/jquery.min.js') }}\"><\/script>")</script>
+    {#<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>#}
+    {#<script>window.jQuery || document.write("<script src=\"{{ asset('components/jquery/dist/jquery.min.js') }}\"><\/script>")</script>#}
+    <script src="{{ asset('components/jquery/dist/jquery.min.js') }}"></script>
     <script src="{{ asset('components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('js/plugins.js') }}"></script>
     <script src="{{ asset('js/main.js') }}"></script>
     {% block javascripts %}{% endblock %}
-{% endblock %}
 {% endblock %}
 </body>
 </html>

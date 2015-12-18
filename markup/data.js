@@ -4,7 +4,7 @@ module.exports.path  = function (param) { return param + '.html'; };
 module.exports.mainMenu = {
     item1: {
         title: 'Home',
-        path:  '#home'
+        path:  'index.html'
     },
     item2: {
         title: 'About',
