@@ -37,16 +37,17 @@ var htdocs = 'web',
             htdocs + '/less/modules/**/*.less',
             htdocs + '/less/modules/**/**/*.less'
         ],
-        swig:     markup + '/**/*.twig',
-        pages:    markup + '/pages/*.twig',
-        css:      htdocs + '/css',
-        cssmain:  'template.css',
-        cssmaino: 'template.min.css',
-        js:       htdocs + '/js',
-        images:   htdocs + '/images',
-        data:     markup + '/data.js',
-        html:     htdocs,
-        modules:  htdocs +'/less/modules/',
+        swig:        markup + '/**/*.twig',
+        pages:       markup + '/pages/*.twig',
+        css:         htdocs + '/css',
+        cssmain:     'template.css',
+        cssmaino:    'template.min.css',
+        js:          htdocs + '/js',
+        images:      htdocs + '/images',
+        data:        markup + '/data.js',
+        html:        htdocs,
+        modules:     htdocs +'/less/modules/',
+        tplSuffix:   true,
         tpl:  [
             htdocs + '/components/markup-templates/templates',
             'E:\\domains\\layouts\\templates'
@@ -335,17 +336,24 @@ gulp.task('clone', function () {
     }
 });
 
-// BEM
+// BEM less
 gulp.task('bem', function () {
     var block     = args.b,
         elements  = args.e,
         modifiers = args.m,
-        page      = args.page || 'index',
+        page      = args.page,
         path      = args.path || block,
         filename  = block + '.less',
         less      = '.' + block + ' {\n',
         html      = '\n<div class="' + block + '">\n',
         i;
+
+    if(!page) {
+        page = 'index';
+        if(src.tplSuffix) {
+            page = page + '.html';
+        }
+    }
 
     if(elements) {
         elements  = elements.split(',');
