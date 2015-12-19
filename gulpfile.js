@@ -1,3 +1,5 @@
+'use strict';
+
 var gulp        = require('gulp'),
     requireWC   = require('require-without-cache'),
     browserSync = require('browser-sync'),
@@ -22,7 +24,8 @@ var gulp        = require('gulp'),
     fs          = require('fs'),
     yaml        = require('js-yaml'),
     vinylPaths  = require('vinyl-paths'),
-    file        = require('gulp-file');
+    file        = require('gulp-file'),
+    plumber     = require('gulp-plumber');
 
 var htdocs = 'web',
     markup = 'markup',
@@ -130,6 +133,13 @@ var opts = {
 // Compile Swig
 gulp.task('templates', function() {
     return gulp.src(src.pages)
+        .pipe(plumber({
+            errorHandler: function (error) {
+                notify.onError(function (error) {
+                    return '\nAn error occurred while processing compiled twig-files.\n' + error;
+                });
+            }
+        }))
         .pipe(swig(opts))
         .on('error', notify.onError(function (error) {
             return '\nError! Look in the console for details.\n' + error;
@@ -178,7 +188,7 @@ gulp.task('js', function () {
 
 // Compress images
 gulp.task('compress-images', function () {
-    gulp.src(src.images)
+    return gulp.src(src.images)
         .pipe(imagemin({
             progressive: true,
             svgoPlugins: [{removeViewBox: false}],
