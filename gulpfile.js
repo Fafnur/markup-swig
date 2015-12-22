@@ -117,7 +117,7 @@ var opts = {
 };
 
 // Compile Swig
-gulp.task('templates', ['clean'], function() {
+gulp.task('compile:templates', ['clean'], function() {
     return gulp.src(src.pages)
         .pipe(plumber({
             errorHandler: function (error) {
@@ -138,7 +138,7 @@ gulp.task('templates', ['clean'], function() {
 });
 
 // Compile LESS
-gulp.task('less', function () {
+gulp.task('compile:less', function () {
     return gulp.src(src.less)
         .pipe(concat('template.less'))
         //.pipe(sourcemaps.init())
@@ -153,7 +153,7 @@ gulp.task('less', function () {
 });
 
 // Compress CSS
-gulp.task('compress-css', function () {
+gulp.task('compress:css', function () {
     return gulp.src(src.css + '/' + src.cssmain)
         .pipe(prefix('Last 15 version'))
         .pipe(minifyCSS())
@@ -162,7 +162,7 @@ gulp.task('compress-css', function () {
 });
 
 // Compile JS
-gulp.task('js', function () {
+gulp.task('compile:js', function () {
     return gulp.src(src.javascript)
         .pipe(concat('scripts.js'))
         .on('error', notify.onError(function (error) {
@@ -173,7 +173,7 @@ gulp.task('js', function () {
 });
 
 // Compress images
-gulp.task('compress-images', function () {
+gulp.task('compress:images', function () {
     return gulp.src(src.images)
         .pipe(imagemin({
             progressive: true,
@@ -200,10 +200,6 @@ gulp.task('jshint', function() {
         }));
 });
 
-// Build
-gulp.task('build-less', ['less', 'templates']);
-//gulp.task('build-sass', ['sass', 'jshint', 'templates']);
-
 // Servers
 gulp.task('server', function() {
     browserSync({
@@ -220,7 +216,8 @@ gulp.task('server', function() {
         }) .on('error', function(error) { log('Error happened', error); });
     });
 });
-gulp.task('server-less',  function() {
+
+gulp.task('server:less',  function() {
     chokidar.watch(src.less, {ignored: /[\/\\]\./})
         .on('all', function(event, path) {gulp.start('less');})
         .on('error', notify.onError(function (error) {
@@ -228,8 +225,9 @@ gulp.task('server-less',  function() {
         }));
 });
 
-// Default
-gulp.task('default', ['build-less', 'server']);
+// Build
+gulp.task('build', ['compile:less', 'compile:templates']);
+gulp.task('default', ['build', 'server']);
 
 function toCamelCase(str) {
     return str.toLowerCase()
