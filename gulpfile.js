@@ -63,75 +63,61 @@ var htdocs = 'web',
         {path: src.data,  name: 'templates'}
     ];
 
-//function symfonyLoader(basepath, encoding) {
-//    var ret = {};
-//
-//    encoding = encoding || 'utf8';
-//    basepath = (basepath) ? path.normalize(basepath) : null;
-//    var basedir = process.env.INIT_CWD;
-//    var isWin = /^win/.test(process.platform),
-//        sep = '/';
-//    if(isWin) {
-//        sep = '\\';
-//    }
-//    var markup = sep + 'markup';
-//    var pages = sep + 'pages';
-//
-//    var root = process.env.INIT_CWD;
-//
-//    ret.resolve = function (to, from) {
-//        if (basepath) {
-//            from = basepath;
-//        } else {
-//            from = (from) ? path.dirname(from) : process.cwd();
-//        }
-//        return path.resolve(from, to);
-//    };
-//
-//    ret.load = function (identifier, cb) {
-//        var x = identifier.replace(basedir + markup + pages,''), arr;
-//        console.log(x);
-//        if(isWin) {
-//            arr = x.match(/\\/g);
-//        } else {
-//            arr = x.match(/\//g);
-//        }
-//
-//        console.log(arr);
-//        if(arr.length > 1) {
-//
-//            identifier = identifier.replace(basedir + markup + pages ,basedir + markup);
-//            console.log(identifier);
-//        }
-//
-//        if (!fs || (cb && !fs.readFile) || !fs.readFileSync) {
-//            throw new Error('Unable to find file ' + identifier + ' because there is no filesystem to read from.');
-//        }
-//
-//        c = ret.resolve(identifier);
-//
-//        if (cb) {
-//            fs.readFile(identifier, encoding, cb);
-//            return;
-//        }
-//
-//        return fs.readFileSync(identifier, encoding);
-//    };
-//
-//    return ret;
-//}
 
+function tplLoader(basepath, encoding) {
+    var ret = {};
+
+    encoding = encoding || 'utf8';
+    basepath = (basepath) ? path.normalize(basepath) : null;
+    var basedir = process.env.INIT_CWD;
+    var isWindows = /^win/.test(process.platform),
+        sep = '/';
+
+    if(isWindows) {
+        sep = '\\';
+    }
+
+    var root = process.env.INIT_CWD;
+
+    ret.resolve = function (to, from) {
+        var ret;
+        if (basepath) {
+            from = basepath;
+        } else {
+            from = (from) ? path.dirname(from) : process.cwd();
+        }
+        if(to.split(sep).length == 1) {
+            ret = root + sep + markup + sep + to;
+        } else {
+            ret = path.resolve(from, to);
+        }
+        return ret;
+    };
+
+    ret.load = function (identifier, cb) {
+        if (!fs || (cb && !fs.readFile) || !fs.readFileSync) {
+            throw new Error('Unable to find file ' + identifier + ' because there is no filesystem to read from.');
+        }
+        identifier = ret.resolve(identifier);
+        if (cb) {
+            fs.readFile(identifier, encoding, cb);
+            return;
+        }
+        return fs.readFileSync(identifier, encoding);
+    };
+    return ret;
+}
 
 var opts = {
     defaults: {
-        //loader: symfonyLoader(),
+        loader: tplLoader(),
         cache: false,
         locals: requireWC('./' + src.data, require)
     }
 };
 
 // Compile Swig
-gulp.task('templates', function() {
+gulp.task('templates', ['clean'], function() {
     return gulp.src(src.pages)
         .pipe(plumber({
             errorHandler: function (error) {
@@ -200,7 +186,7 @@ gulp.task('compress-images', function () {
 
 // Clean
 gulp.task('clean', function() {
-    return gulp.src(src.html, { read: false })
+    return gulp.src(htdocs + '/*.html')
         .pipe(rimraf({ force: true }));
 });
 
@@ -219,10 +205,11 @@ gulp.task('build-less', ['less', 'templates']);
 //gulp.task('build-sass', ['sass', 'jshint', 'templates']);
 
 // Servers
-gulp.task('server', ['less'], function() {
+gulp.task('server', function() {
     browserSync({
         server: htdocs
     });
+
     config.forEach(function (item, i, config) {
         chokidar.watch(item.path, {
             ignored: '',
