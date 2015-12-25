@@ -150,6 +150,22 @@ gulp.task('compile:less', function () {
         .pipe(browserSync.reload({stream:true}));
 });
 
+// Compile custom bootstrap
+gulp.task('compile:less:bootstrap', function () {
+    return gulp.src(htdocs + '/less/bootstrap/bootstrap.less' )
+        //.pipe(sourcemaps.init())
+        .pipe(less())
+        .on('error', notify.onError(function (error) {
+            return '\nError! Look in the console for details.\n' + error;
+        }))
+        .pipe(prefix('Last 15 version'))
+        .pipe(minifyCSS())
+        .pipe(rename('bootstrap.min.css'))
+        //.pipe(sourcemaps.write())
+        .pipe(gulp.dest(src.css))
+        .pipe(browserSync.reload({stream:true}));
+});
+
 // Compress CSS
 gulp.task('compress:css', function () {
     return gulp.src(src.css + '/' + src.cssmain)
