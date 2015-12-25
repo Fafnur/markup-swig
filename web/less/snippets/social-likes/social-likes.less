@@ -1,0 +1,95 @@
+.social-likes {
+  &__icon {
+    display: inline-block;
+    font: normal normal normal 14px/1 Arial;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    cursor: pointer;
+
+    &_facebook:before {
+      content: "\f09a";
+    }
+    &_twitter:before {
+      content: "\f099";
+    }
+    &_mailru:before {
+      content: "\f0d5";
+    }
+    &_vkontakte:before {
+      content: "\f189";
+    }
+    &_odnoklassniki:before {
+      content: "\f263";
+    }
+    &_plusone:before {
+      content: "\f0d5";
+    }
+    &_pinterest:before {
+      content: "\f0d2";
+    }
+  }
+
+  &_cycle &__icon {
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    vertical-align: middle;
+    text-align: center;
+    .border-radius(50%);
+    background-color: #cc0000;
+    color: #fff;
+    margin-right: 6px;
+  }
+
+  &_cycle &__icon:last-child,
+  .lt-ie9 &_cycle &__icon._last {
+    margin-right: 0;
+  }
+
+  &_cycle &__icon:hover {
+    background-color: #cc0000;
+  }
+
+  &_follow-me {
+    overflow: hidden;
+  }
+  &_follow-me &__button  {
+    display: block;
+    width: 16.6%;
+    float: left;
+    text-align: center;
+  }
+
+  &_follow-me &__icon {
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+  }
+  @media (min-width: @screen-xs-min) {
+    &_follow-me &__icon {
+      width: 40px;
+      height: 40px;
+      line-height: 40px;
+    }
+  }
+  @media (min-width: @screen-sm-min) {
+
+  }
+  @media (min-width: @screen-md-min) {
+    &_follow-me &__icon {
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+    }
+  }
+  @media (min-width: @screen-lg-min) {
+    &_follow-me &__icon {
+      width: 40px;
+      height: 40px;
+      line-height: 40px;
+    }
+  }
+
+}

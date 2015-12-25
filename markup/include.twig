@@ -1,0 +1,86 @@
+<!-- fancybox -->
+<link rel="stylesheet" href="{{ asset('components/fancybox/source/jquery.fancybox.css') }}">
+<script src="{{ asset('components/fancybox/source/jquery.fancybox.pack.js') }}"></script>
+<script>
+    (function ($) {
+        $(document).ready(function (e) {
+            $(".js-fancybox").fancybox({
+                helpers: {
+                    overlay: {
+                        locked: false
+                    }
+                }
+            });
+        });
+    })(jQuery);
+</script>
+<!-- .//fancybox -->
+
+
+<!-- owl.carousel -->
+<link rel="stylesheet" href="{{ asset('components/owl.carousel/dist/assets/owl.carousel.css') }}">
+<link rel="stylesheet" href="{{ asset('components/owl.carousel/dist/assets/owl.theme.green.css') }}">
+<script src="{{ asset('components/owl.carousel/dist/owl.carousel.js') }}"></script>
+<script>
+    (function ($) {
+        $(document).ready(function () {
+            $('.js-owlcarousel').owlCarousel({
+                loop: true,
+                responsive: {
+                    0: {
+                        items: 4
+                    },
+                    992: {
+                        items: 6
+                    }
+                }
+            });
+        });
+    })(jQuery);
+</script>
+<!-- .//owl.carousel -->
+
+
+<!-- bxslider -->
+<link rel="stylesheet" href="{{ asset('components/bxslider-4/dist/jquery.bxslider.min.css') }}">
+<script src="{{ asset('components/bxslider-4/dist/jquery.bxslider.min.js') }}"></script>
+<script>
+    (function ($) {
+        $(document).ready(function (e) {
+            $('.js-bxslider').bxSlider();
+        });
+    })(jQuery);
+</script>
+<!-- .//bxslider -->
+
+
+<!-- social-likes -->
+<script src="{{ asset('components/social-likes/social-likes.min.js') }}"></script>
+<!-- .//social-likes -->
+
+
+<!-- select2 -->
+<link rel="stylesheet" href="{{ asset('components/select2/dist/css/select2.min.css') }}">
+<script src="{{ asset('components/select2/dist/js/select2.full.min.js') }}"></script>
+<script src="{{ asset('components/select2/dist/js/i18n/ru.js') }}"></script>
+<script>
+    (function ($) {
+        $(document).ready(function (e) {
+            $('select').select2();
+        });
+    })(jQuery);
+</script>
+<!-- .//select2 -->
+
+
+<!-- iCheck -->
+<link rel="stylesheet" href="{{ asset('components/iCheck/skins/minimal/minimal.css') }}">
+<script src="{{ asset('components/iCheck/icheck.min.js') }}"></script>
+<script>
+    (function ($) {
+        $(document).ready(function (e) {
+            $('.js-input-icheck').iCheck();
+        });
+    })(jQuery);
+</script>
+<!-- //iCheck -->
