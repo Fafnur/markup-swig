@@ -57,10 +57,10 @@ var htdocs = 'web',
         ]
     },
     config = [
-        {path: src.less,  name: 'less'},
-        {path: src.swig,  name: 'templates'},
-        {path: src.pages, name: 'templates'},
-        {path: src.data,  name: 'templates'}
+        {path: src.less,  name: 'compile:less'},
+        {path: src.swig,  name: 'compile:templates'},
+        {path: src.pages, name: 'compile:templates'},
+        {path: src.data,  name: 'compile:templates'}
     ];
 
 
