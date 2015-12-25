@@ -108,14 +108,6 @@ function tplLoader(basepath, encoding) {
     return ret;
 }
 
-var opts = {
-    defaults: {
-        loader: tplLoader(),
-        cache: false,
-        locals: requireWC('./' + src.data, require)
-    }
-};
-
 // Compile Swig
 gulp.task('compile:templates', ['clean'], function() {
     return gulp.src(src.pages)
@@ -126,7 +118,13 @@ gulp.task('compile:templates', ['clean'], function() {
                 });
             }
         }))
-        .pipe(swig(opts))
+        .pipe(swig({
+            defaults: {
+                loader: tplLoader(),
+                cache: false,
+                locals: requireWC('./' + src.data, require)
+            }
+        }))
         .on('error', notify.onError(function (error) {
             return '\nError! Look in the console for details.\n' + error;
         }))
