@@ -38,7 +38,8 @@ var htdocs = 'web',
             htdocs + '/less/libs/**/*.css',
             htdocs + '/less/snippets/**/*.less',
             htdocs + '/less/modules/**/*.less',
-            htdocs + '/less/modules/**/**/*.less'
+            htdocs + '/less/modules/**/**/*.less',
+            htdocs + '/less/components/**/*.less'
         ],
         swig:        markup + '/**/*.twig',
         pages:       markup + '/pages/*.twig',
