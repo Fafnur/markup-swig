@@ -87,7 +87,7 @@ function tplLoader(basepath, encoding) {
         } else {
             from = (from) ? path.dirname(from) : process.cwd();
         }
-        if(to.split(sep).length == 1) {
+        if(to.split(sep).length <= 3) {
             ret = root + sep + markup + sep + to;
         } else {
             ret = path.resolve(from, to);
