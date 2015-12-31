@@ -122,7 +122,7 @@ gulp.task('compile:templates', ['clean'], function() {
             defaults: {
                 loader: tplLoader(),
                 cache: false,
-                locals: requireWC('./' + src.data, require)
+                locals: requireWC(process.env.INIT_CWD   + path.sep +  src.data, require)
             }
         }))
         .on('error', notify.onError(function (error) {
