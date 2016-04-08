@@ -1,6 +1,6 @@
 {
-  "name": "alex",
-  "version": "0.1.0",
+  "name": "markup-swig",
+  "version": "0.2.0",
   "authors": [
     "fafnur <fafnur@yandex.ru>"
   ],
@@ -16,15 +16,15 @@
     "tests"
   ],
   "dependencies": {
-    "bootstrap": "~3.3.5",
-    "font-awesome": "fontawesome#~4.4.0",
-    "jquery": "~2.1.4",
+    "bootstrap": "^3.3.6",
+    "font-awesome": "^4.5.0",
+    "jquery": "^2.2.3",
     "markup-templates": "~0.1.0",
-    "fancybox": "~2.1.5",
-    "owl.carousel": "~2.0.0-beta.3",
-    "bxslider-4": "~4.2.5",
-    "select2": "~4.0.1",
-    "iCheck": "~1.0.2",
-    "social-likes": "~3.0.15"
+    "fancybox": "^2.1.5",
+    "owl.carousel": "^2.0.0-beta.3",
+    "bxslider-4": "^4.2.5",
+    "select2": "^4.0.2",
+    "iCheck": "^1.0.2",
+    "social-likes": "^3.1.0"
   }
 }

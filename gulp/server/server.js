@@ -11,12 +11,19 @@ var gulp = require('gulp'),
     ;
 
 var $ = require('gulp-load-plugins')({
-    pattern: ['gulp-*', 'notify']
+    pattern: ['gulp-*', 'run-sequence']
 });
 
-gulp.task('browser-sync', ['compile:watch:less', 'compile:watch:twig'], function() {
+gulp.task('serve', ['watch:less', 'watch:twig'], function() {
     browserSync({
         server: 'web',
         files: ['web/css/*.css', 'web/js/*.js', 'web/*.html']
     });
+});
+
+gulp.task('build', function(cb) {
+    $.runSequence(
+        ['build:less', 'build:twig'], 
+        cb
+    );
 });

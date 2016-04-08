@@ -8,19 +8,26 @@ var gulp = require('gulp'),
     conf = require('../config');
 
 var $ = require('gulp-load-plugins')({
-    pattern: ['gulp-*', 'del','vinyl-paths']
+    pattern: ['gulp-*', 'run-sequence']
 });
 
-gulp.task('compress:css:clean', function() {
+gulp.task('clean:css', function() {
     return gulp.src(conf.htdocs.css + '/' + conf.preCSS.outMin)
-        .pipe($.vinylPaths($.del));
+        .pipe($.rimraf());
 });
 
-// Compress CSS
-gulp.task('compress:css', ['compress:css:clean'], function () {
+gulp.task('compress:css', function() {
     return gulp.src(conf.htdocs.css + '/' + conf.preCSS.out)
         .pipe($.autoprefixer())
-        .pipe($.minifyCss())
+        .pipe($.cssnano())
         .pipe($.rename(conf.preCSS.outMin))
         .pipe(gulp.dest(conf.htdocs.css));
+});
+
+gulp.task('build:css', function(cb) {
+    $.runSequence(
+        'clean:css',
+        'compress:css',
+        cb
+    );
 });

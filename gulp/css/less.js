@@ -6,19 +6,20 @@ var gulp = require('gulp'),
     gutil = require('gulp-util'),
     path = require('path'),
     chokidar   = require('chokidar'),
-    conf = require('../config');
+    conf = require('../config'),
+    options = conf.watchOptions;
 
 var $ = require('gulp-load-plugins')({
-    pattern: ['gulp-*', 'sourcemaps', 'browser-sync', 'notify', 'del','vinyl-paths']
+    pattern: ['gulp-*', 'sourcemaps', 'browser-sync', 'notify', 'run-sequence']
 });
-
-gulp.task('compile:clean:css', function() {
-    return gulp.src(conf.markup.root + '/css/' + conf.preCSS.out)
-        .pipe($.vinylPaths($.del));
-});
-
-gulp.task('compile:less', function () {
+  
+gulp.task('less', function () {
     return gulp.src(conf.preCSS.src)
+        .pipe($.plumber({
+            errorHandler: function (error) {
+                console.log('\nError in less compile\n'  + error);
+            }
+        }))
         .pipe($.concat(conf.preCSS.in))
         .pipe($.if(conf.preCSS.isSourcemaps, $.sourcemaps.init()))
         .pipe($.less())
@@ -27,16 +28,21 @@ gulp.task('compile:less', function () {
         }))
         .pipe($.rename(conf.preCSS.out))
         .pipe($.if(conf.preCSS.isSourcemaps, $.sourcemaps.write()))
+        .pipe($.if(conf.preCSS.isMinify, $.cssnano()))
         .pipe(gulp.dest(conf.htdocs.css))
-        .pipe($.browserSync.reload({stream: true}))
-        ;
+        .pipe($.browserSync.reload({stream: true}));
 });
 
-gulp.task('compile:less:bootstrap', function () {
+gulp.task('build:bootstrap', function () {
     return gulp.src(conf.htdocs.root + '/less/bootstrap/bootstrap.less' )
+        .pipe($.plumber({
+            errorHandler: function (error) {
+                console.log('\nError in less/bootstrap/bootstrap.less file\n'  + error);
+            }
+        }))
         .pipe($.if(conf.preCSS.isSourcemaps, $.sourcemaps.init()))
         .pipe($.less())
-        .pipe($.minifyCss())
+        .pipe($.cssnano())
         .pipe($.rename('bootstrap.min.css'))
         .pipe($.if(conf.preCSS.isSourcemaps, $.sourcemaps.write()))
         .pipe(gulp.dest(conf.htdocs.css))
@@ -45,14 +51,12 @@ gulp.task('compile:less:bootstrap', function () {
         }));
 });
 
-gulp.task('compile:watch:less', ['compile:clean:css'], function() {
-    gulp.start('compile:less');
+gulp.task('build:less',  function(cb) {
+    gulp.start('less');
+});
 
-    chokidar.watch(conf.preCSS.src, {
-        ignored: '',
-        persistent: true,
-        ignoreInitial: true
-    }).on('all', function (event, path) {
-        gulp.start('compile:less');
+gulp.task('watch:less',  function(cb) {
+    $.watch(conf.preCSS.src, options, function (vinyl) {
+        gulp.start('less');
     });
 });

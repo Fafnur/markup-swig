@@ -1,8 +1,10 @@
 'use strict';
 
 var gutil = require('gulp-util');
+var env = require('process').env;
 
 exports.root = process.env.INIT_CWD;
+
 
 /**
  * Root folder web-app
@@ -55,7 +57,8 @@ var preCSS = {
     in:           'template.less',
     out:          'template.css',
     outMin:       'template.min.css',
-    isSourcemaps: false
+    isSourcemaps: false,
+    isMinify: false
 };
 exports.preCSS = preCSS;
 
@@ -76,4 +79,9 @@ exports.errorHandler = function(title) {
         gutil.log(gutil.colors.red('[' + title + ']'), err.toString());
         this.emit('end');
     };
+};
+
+exports.watchOptions = {
+    usePolling: env.USEPOLLING || false,
+    verbose: true
 };

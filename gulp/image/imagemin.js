@@ -8,16 +8,15 @@ var gulp = require('gulp'),
     conf = require('../config');
 
 var $ = require('gulp-load-plugins')({
-    pattern: ['gulp-*', 'del','vinyl-paths','imagemin-pngquant']
+    pattern: ['gulp-*', 'del','vinyl-paths','imagemin-pngquant', 'run-sequence']
 });
 
-gulp.task('compress:images:clean', function() {
+gulp.task('clean:images', function() {
     return gulp.src(conf.htdocs.root + '/compress-images')
-        .pipe($.vinylPaths($.del));
+        .pipe($.rimraf());
 });
 
-gulp.task('compress:images', ['compress:images:clean'], function () {
-    console.log(conf.htdocs.images);
+gulp.task('compress:images', function() {
     return gulp.src(conf.htdocs.images + '/**/*')
         .pipe($.imagemin({
             progressive: true,
@@ -26,4 +25,12 @@ gulp.task('compress:images', ['compress:images:clean'], function () {
             interlaced: true
         }))
         .pipe(gulp.dest(conf.htdocs.root + '/compress-images'));
+});
+
+gulp.task('compile:rebuild:models', function(cb) {
+    $.runSequence(
+        'clean:images',
+        'compress:images',
+        cb
+    );
 });

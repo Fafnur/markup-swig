@@ -12,28 +12,35 @@ var gulp = require('gulp'),
     ;
 
 var $ = require('gulp-load-plugins')({
-    pattern: ['gulp-*','browser-sync','plumber','notify', 'require-without-cache', 'del','vinyl-paths']
+    pattern: ['gulp-*','browser-sync','plumber','notify', 'require-without-cache', 'run-sequence']
 });
 
-gulp.task('compile:clean:html', function() {
+gulp.task('clean:html', function() {
     return gulp.src(conf.markup.root + '/*.html')
-        .pipe($.vinylPaths($.del));
+        .pipe($.rimraf());
 });
 
-gulp.task('compile:data:del', function () {
+gulp.task('clean:data', function () {
     return gulp.src( conf.markup.data + '/all.js')
-        .pipe($.vinylPaths($.del))
+        .pipe($.rimraf())
 });
 
-gulp.task('compile:data:all',['compile:data:del'], function() {
+gulp.task('compress:data', function() {
     return gulp.src(conf.markup.data + '/**/*.js')
         .pipe($.concat('all.js'))
         .pipe(gulp.dest(conf.markup.data));
 });
 
-// Compile Swig
-gulp.task('compile:twig', function() {
-
+gulp.task('build:data', function(cb) {
+    $.runSequence(
+        'clean:data',
+        'compress:data',
+        cb
+    );
+});
+  
+gulp.task('twig', function() {
+    
     function merge_options(objs){
         var ret = {};
         for (var key in objs) {
@@ -70,30 +77,28 @@ gulp.task('compile:twig', function() {
         .pipe($.browserSync.reload({stream:true}));
 });
 
-gulp.task('compile:build:twig', ['compile:clean:html', 'compile:data:all'], function() {
-    gulp.start('compile:twig');
+gulp.task('build:twig', function(cb) {
+    $.runSequence(
+        ['clean:html', 'build:data'],
+        'twig',
+        cb
+    );
 });
 
-gulp.task('compile:rebuild:data', ['compile:data:all'], function() {
-    gulp.start('compile:twig');
+gulp.task('rebuild:data', function(cb) {
+    $.runSequence(
+        ['build:data'],
+        'twig',
+        cb
+    );
 });
 
-gulp.task('compile:watch:twig', ['compile:clean:html'], function() {
-    gulp.start('compile:build:twig');
-
-    chokidar.watch(conf.markup.views, {
-        ignored: '',
-        persistent: true,
-        ignoreInitial: true
-    }).on('all', function (event, path) {
-        gulp.start('compile:twig');
+gulp.task('watch:twig', function() {
+    $.watch(conf.markup.views, options, function (vinyl) {
+        gulp.start('twig');
     });
 
-    chokidar.watch(conf.htdocs.data + '/**/*', {
-        ignored: 'all.js',
-        persistent: true,
-        ignoreInitial: true
-    }).on('all', function (event, path) {
-        gulp.start('compile:rebuild:data');
+    $.watch(conf.htdocs.data + '/**/*', options, function (vinyl) {
+        gulp.start('rebuild:data');
     });
 });
