@@ -8,8 +8,8 @@ var gulp = require('gulp'),
     fs   = require('fs'),
     chokidar   = require('chokidar'),
     conf = require('../config'),
-    loader = require('./loader')
-    ;
+    loader = require('./loader'),
+    options = conf.watchOptions;
 
 var $ = require('gulp-load-plugins')({
     pattern: ['gulp-*','browser-sync','plumber','notify', 'require-without-cache', 'run-sequence']
@@ -44,9 +44,13 @@ gulp.task('twig', function() {
     function merge_options(objs){
         var ret = {};
         for (var key in objs) {
-            var obj = objs[key];
-            for (var attr in obj) {
-                ret[attr] = obj[attr];
+            if(objs.hasOwnProperty(key)) {
+                var obj = objs[key];
+                for (var attr in obj) {
+                    if(obj.hasOwnProperty(attr)) {
+                        ret[attr] = obj[attr];
+                    }
+                }
             }
         }
         return ret;
@@ -93,12 +97,21 @@ gulp.task('rebuild:data', function(cb) {
     );
 });
 
-gulp.task('watch:twig', function() {
-    $.watch(conf.markup.views, options, function (vinyl) {
+gulp.task('watch:twig', ['build:twig'], function(cb) {
+ 
+    chokidar.watch(conf.markup.views, {
+        ignored: '',
+        persistent: true,
+        ignoreInitial: true
+    }).on('all', function (event, path) {
         gulp.start('twig');
     });
 
-    $.watch(conf.htdocs.data + '/**/*', options, function (vinyl) {
+    chokidar.watch(conf.htdocs.data + '/**/*', {
+        ignored: 'all.js',
+        persistent: true,
+        ignoreInitial: true
+    }).on('all', function (event, path) {
         gulp.start('rebuild:data');
     });
 });

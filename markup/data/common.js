@@ -12,6 +12,6 @@ module.exports.mainMenu = {
     },
     item3: {
         title: 'Contacts',
-        path:  '#contacts'
+        path:  '#contactssss'
     }
 };
