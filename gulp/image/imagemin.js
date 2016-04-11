@@ -27,7 +27,7 @@ gulp.task('compress:images', function() {
         .pipe(gulp.dest(conf.htdocs.root + '/compress-images'));
 });
 
-gulp.task('compile:rebuild:models', function(cb) {
+gulp.task('build:images', function(cb) {
     $.runSequence(
         'clean:images',
         'compress:images',
