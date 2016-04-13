@@ -59,7 +59,7 @@ gulp.task('twig', function() {
     return gulp.src(conf.markup.views + '/pages/*.twig')
         .pipe($.plumber({
             errorHandler: function (error) {
-                console.log('\nError in twig file:' + ctrl.tpl + '\n'  + error);
+                console.log('\nError in twig file:\n'  + error);
             }
         }))
         .pipe($.swig({
