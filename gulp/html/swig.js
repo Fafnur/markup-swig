@@ -107,7 +107,11 @@ gulp.task('watch:twig', ['build:twig'], function(cb) {
         gulp.start('twig');
     });
 
-    chokidar.watch(conf.htdocs.data + '/**/*', {
+    chokidar.watch([
+        conf.markup.data + '/*',
+        conf.markup.data + '/**/*',
+        !conf.markup.data + '/all.js'
+    ], {
         ignored: 'all.js',
         persistent: true,
         ignoreInitial: true
