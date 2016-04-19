@@ -38,9 +38,9 @@ gulp.task('build:data', function(cb) {
         cb
     );
 });
-  
+
 gulp.task('twig', function() {
-    
+
     function merge_options(objs){
         var ret = {};
         for (var key in objs) {
@@ -67,7 +67,7 @@ gulp.task('twig', function() {
                 loader: loader(),
                 cache: false,
                 locals: merge_options([
-                   $.requireWithoutCache(conf.root + path.sep + conf.markup.data.replace('\/',path.sep) + path.sep + 'all.js', require)
+                    $.requireWithoutCache(conf.root + path.sep + conf.markup.data.replace('\/',path.sep) + path.sep + 'all.js', require)
                 ])
             }
         }))
@@ -98,12 +98,10 @@ gulp.task('rebuild:data', function(cb) {
 });
 
 gulp.task('watch:twig', ['build:twig'], function(cb) {
- 
+
     chokidar.watch(conf.markup.views, {
-        ignored: '',
-        persistent: true,
-        ignoreInitial: true
-    }).on('all', function (event, path) {
+        persistent: true
+    }).on('change', function (event, path) {
         gulp.start('twig');
     });
 
@@ -112,10 +110,9 @@ gulp.task('watch:twig', ['build:twig'], function(cb) {
         conf.markup.data + '/**/*',
         !conf.markup.data + '/all.js'
     ], {
-        ignored: 'all.js',
-        persistent: true,
-        ignoreInitial: true
-    }).on('all', function (event, path) {
+        persistent: true
+
+    }).on('change', function (event, path) {
         gulp.start('rebuild:data');
     });
 });
