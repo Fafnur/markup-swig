@@ -1,21 +1,19 @@
 'use strict';
-/**
- * Compile LESS files
- */
+
 var gulp = require('gulp'),
     gutil = require('gulp-util'),
     path = require('path'),
-    chokidar = require('chokidar'),
-    browserSync = require('browser-sync'),
     conf = require('../config')
     ;
 
 var $ = require('gulp-load-plugins')({
-    pattern: ['gulp-*', 'run-sequence']
+    pattern: ['gulp-*', 'run-sequence', 'browser-sync']
 });
 
-gulp.task('serve', ['watch:less', 'watch:twig'], function() {
-    browserSync({
+gulp.task('serve', function() {
+    gulp.start('watch:less');
+    gulp.start('watch:twig');
+    $.browserSync({
         server: 'web',
         files: ['web/css/*.css', 'web/js/*.js', 'web/*.html']
     });

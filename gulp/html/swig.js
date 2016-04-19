@@ -59,7 +59,7 @@ gulp.task('twig', function() {
     return gulp.src(conf.markup.views + '/pages/*.twig')
         .pipe($.plumber({
             errorHandler: function (error) {
-                console.log('\nError in twig file:' + ctrl.tpl + '\n'  + error);
+                console.log('\nError in twig file:\n'  + error);
             }
         }))
         .pipe($.swig({
@@ -107,7 +107,11 @@ gulp.task('watch:twig', ['build:twig'], function(cb) {
         gulp.start('twig');
     });
 
-    chokidar.watch(conf.htdocs.data + '/**/*', {
+    chokidar.watch([
+        conf.markup.data + '/*',
+        conf.markup.data + '/**/*',
+        !conf.markup.data + '/all.js'
+    ], {
         ignored: 'all.js',
         persistent: true,
         ignoreInitial: true
