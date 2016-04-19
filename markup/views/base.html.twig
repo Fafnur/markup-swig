@@ -13,13 +13,13 @@
     <title>{% block page_title %}Markup Swig{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}"/>
-    <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}"/>
+    <link rel="apple-touch-icon" href="{{ asset('apple-icon.png') }}"/>
 
     <meta name="description" content="{% block meta_description %}Markup swig{% endblock %}">
     <meta name="keywords" content="{% block meta_keywords %}Markup swig{% endblock %}">
     {% block meta_og_all %}
-        <meta property="og:title" content="{% block meta_og_title %}{% endblock %}"/>
-        <meta property="og:type" content="{% block meta_og_type %}{% endblock %}"/>
+        <meta property="og:title" content="{% block meta_og_title %}Markup Swig{% endblock %}"/>
+        <meta property="og:type" content="{% block meta_og_type %}article{% endblock %}"/>
         <meta property="og:url" content="{% block meta_og_url %}{% endblock %}"/>
         <meta property="og:image" content="{% block meta_og_img %}{% endblock %}"/>
         <meta property="og:image:type" content="{% block meta_og_img_type %}image/jpeg{% endblock %}"/>
@@ -97,8 +97,6 @@
 {% endblock %}
 
 {% block javascript_all %}
-    {#<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>#}
-    {#<script>window.jQuery || document.write("<script src=\"{{ asset('components/jquery/dist/jquery.min.js') }}\"><\/script>")</script>#}
     <script src="{{ asset('components/jquery/dist/jquery.min.js') }}"></script>
     <script src="{{ asset('components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('js/plugins.js') }}"></script>
