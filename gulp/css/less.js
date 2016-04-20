@@ -24,9 +24,9 @@ gulp.task('less', function () {
         .pipe($.concat(conf.preCSS.in))
 
         .pipe($.if(conf.preCSS.isSourcemaps, $.sourcemaps.init()))
-        .pipe($.cached('less'))
+        .pipe($.if(conf.preCSS.isCache, $.cached('less')))
         .pipe($.less())
-        .pipe($.remember('less'))
+        .pipe($.if(conf.preCSS.isCache, $.remember('less')))
         .pipe($.rename(conf.preCSS.out))
         .pipe($.if(conf.preCSS.isSourcemaps, $.sourcemaps.write()))
         .pipe($.if(conf.preCSS.isMinify, $.cssnano()))

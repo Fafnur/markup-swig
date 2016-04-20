@@ -58,7 +58,8 @@ var preCSS = {
     out:          'template.css',
     outMin:       'template.min.css',
     isSourcemaps: false,
-    isMinify: false
+    isMinify: false,
+    isCache: false
 };
 exports.preCSS = preCSS;
 
