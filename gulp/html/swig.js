@@ -57,11 +57,6 @@ gulp.task('twig', function() {
     }
 
     return gulp.src(conf.markup.views + '/pages/*.twig')
-        .pipe($.plumber({
-            errorHandler: function (error) {
-                console.log('\nError in twig file:\n'  + error);
-            }
-        }))
         .pipe($.swig({
             defaults: {
                 loader: loader(),
@@ -69,6 +64,11 @@ gulp.task('twig', function() {
                 locals: merge_options([
                     $.requireWithoutCache(conf.root + path.sep + conf.markup.data.replace('\/',path.sep) + path.sep + 'all.js', require)
                 ])
+            }
+        }))
+        .pipe($.plumber({
+            errorHandler: function (error) {
+                console.log('\nError in twig file:\n'  + error);
             }
         }))
         .pipe($.rename(function (path) {

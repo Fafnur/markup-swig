@@ -50,7 +50,6 @@ var preCSS = {
         htdocs.less + '/libs/**/*.css',
         htdocs.less + '/snippets/**/*.less',
         htdocs.less + '/modules/**/*.less',
-        htdocs.less + '/modules/**/**/*.less',
         htdocs.less + '/components/**/*.less'
     ],
     modules:      htdocs.less + '/components/**/*.less',

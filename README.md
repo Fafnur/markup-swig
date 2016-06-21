@@ -51,31 +51,31 @@ gulp
 Как работает?
 --------------
 
-В папке markup хранятся все шаблоны и данные (markup/data.js) для них.
+В папке markup хранятся все шаблоны и данные (markup/data) для них.
 В папка web, хранятся все статичные файлы.
 
-Добавлен loader шаблонов для SwigJS. Теперь корневая папка для шаблонов это папка markup. Для того, чтобы
+Добавлен loader шаблонов для SwigJS. Теперь корневая папка для шаблонов это папка markup/views. Для того, чтобы
 подключить файл в шаблоне, или переопределить его, необходимо указывать путь относительно папки markup.
 
-Например для того чтобы отнаследоваться от шаблона markup/base.html.twig необходимо указать путь:
+Например для того чтобы отнаследоваться от шаблона markup/views/base.html.twig необходимо указать путь:
 
 `
 {% extends 'base.html.twig' %}
 `
 
-Для того чтобы отнаследоваться от markup/pages/index.html.twig соответсвенно указываем путь:
+Для того чтобы отнаследоваться от markup/views/pages/index.html.twig соответсвенно указываем путь:
 
 `
 {% extends 'pages/index.html.twig' %}
 `
 
-Для вставки блоков, аналогично. Напривер вставка навбара в markup/base.html.twig:
+Для вставки блоков, аналогично. Напривер вставка навбара в markup/views/base.html.twig:
 
 `
 {% include 'common/navbar.html.twig' %}
 `
 
-Или в markup/pages/index.html.twig:
+Или в markup/views/pages/index.html.twig:
 
 `
 {% include 'common/navbar.html.twig' %}
@@ -100,7 +100,7 @@ gulp bem --b name-block --e element,element2,element3 --m modify1,modify2
 
 --m    - название модификаторов
 
---page - на какую страницу вставить html (по умолчанию markup/pages/index.twig)
+--page - на какую страницу вставить html (по умолчанию markup/views/pages/index.twig)
 
 --path - необязательный параметр, который позволяет добавлять блок к другим блокам( например добавить test-title.less в папку web/less/test/
 
@@ -140,7 +140,7 @@ gulp clone --from test --ver test1 --to news
 
 --to   - имя для копируемого шаблона (заменит html и css на соответвующее имя; по умолчанию значение из --from)
 
---page - на какую страницу вставить html (по умолчанию markup/pages/index.html.twig)
+--page - на какую страницу вставить html (по умолчанию markup/views/pages/index.html.twig)
 
 
 Небольшие хаки

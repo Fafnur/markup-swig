@@ -15,17 +15,15 @@ var $ = require('gulp-load-plugins')({
   
 gulp.task('less', function () {
     return gulp.src(conf.preCSS.src)
+        .pipe($.concat(conf.preCSS.in))
+        .pipe($.if(conf.preCSS.isSourcemaps, $.sourcemaps.init()))
+        .pipe($.if(conf.preCSS.isCache, $.cached('less')))
+        .pipe($.less())
         .pipe($.plumber({
             errorHandler: function (error) {
                 console.log('\nError in less compile\n'  + error);
             }
         }))
-
-        .pipe($.concat(conf.preCSS.in))
-
-        .pipe($.if(conf.preCSS.isSourcemaps, $.sourcemaps.init()))
-        .pipe($.if(conf.preCSS.isCache, $.cached('less')))
-        .pipe($.less())
         .pipe($.if(conf.preCSS.isCache, $.remember('less')))
         .pipe($.rename(conf.preCSS.out))
         .pipe($.if(conf.preCSS.isSourcemaps, $.sourcemaps.write()))
@@ -40,13 +38,13 @@ gulp.task('less', function () {
 
 gulp.task('build:bootstrap', function () {
     return gulp.src(conf.htdocs.root + '/less/bootstrap/bootstrap.less' )
+        .pipe($.if(conf.preCSS.isSourcemaps, $.sourcemaps.init()))
+        .pipe($.less())
         .pipe($.plumber({
             errorHandler: function (error) {
                 console.log('\nError in less/bootstrap/bootstrap.less file\n'  + error);
             }
         }))
-        .pipe($.if(conf.preCSS.isSourcemaps, $.sourcemaps.init()))
-        .pipe($.less())
         .pipe($.cssnano())
         .pipe($.rename('bootstrap.min.css'))
         .pipe($.if(conf.preCSS.isSourcemaps, $.sourcemaps.write()))
