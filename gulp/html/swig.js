@@ -57,6 +57,7 @@ gulp.task('twig', function() {
     }
 
     return gulp.src(conf.markup.views + '/pages/*.twig')
+        .pipe($.plumber())
         .pipe($.swig({
             defaults: {
                 loader: loader(),
@@ -65,19 +66,13 @@ gulp.task('twig', function() {
                     $.requireWithoutCache(conf.root + path.sep + conf.markup.data.replace('\/',path.sep) + path.sep + 'all.js', require)
                 ])
             }
-        }))
-        .pipe($.plumber({
-            errorHandler: function (error) {
-                console.log('\nError in twig file:\n'  + error);
-            }
-        }))
+        }).on('error', $.notify.onError(function (error) {
+            return '\nError compile swig:' + '\n' + error;
+        })))
         .pipe($.rename(function (path) {
             path.basename = path.basename.replace(/\..+$/, '');
         }))
         .pipe(gulp.dest(conf.htdocs.root))
-        .on('error', $.notify.onError(function (error) {
-            return '\nError! Look in the console for details.\n' + error;
-        }))
         .pipe($.browserSync.reload({stream:true}));
 });
 
@@ -97,7 +92,7 @@ gulp.task('rebuild:data', function(cb) {
     );
 });
 
-gulp.task('watch:twig', ['build:twig'], function(cb) {
+gulp.task('watch:twig', function(cb) {
 
     chokidar.watch(conf.markup.views, {
         persistent: true

@@ -15,15 +15,13 @@ var $ = require('gulp-load-plugins')({
   
 gulp.task('less', function () {
     return gulp.src(conf.preCSS.src)
+        .pipe($.plumber())
         .pipe($.concat(conf.preCSS.in))
         .pipe($.if(conf.preCSS.isSourcemaps, $.sourcemaps.init()))
         .pipe($.if(conf.preCSS.isCache, $.cached('less')))
-        .pipe($.less())
-        .pipe($.plumber({
-            errorHandler: function (error) {
-                console.log('\nError in less compile\n'  + error);
-            }
-        }))
+        .pipe($.less().on('error', $.notify.onError(function (error) {
+            return '\nError compile:' + '\n' + error;
+        })))
         .pipe($.if(conf.preCSS.isCache, $.remember('less')))
         .pipe($.rename(conf.preCSS.out))
         .pipe($.if(conf.preCSS.isSourcemaps, $.sourcemaps.write()))
@@ -39,26 +37,20 @@ gulp.task('less', function () {
 gulp.task('build:bootstrap', function () {
     return gulp.src(conf.htdocs.root + '/less/bootstrap/bootstrap.less' )
         .pipe($.if(conf.preCSS.isSourcemaps, $.sourcemaps.init()))
-        .pipe($.less())
-        .pipe($.plumber({
-            errorHandler: function (error) {
-                console.log('\nError in less/bootstrap/bootstrap.less file\n'  + error);
-            }
-        }))
+        .pipe($.less().on('error', $.notify.onError(function (error) {
+            return '\nError compile:' + '\n' + error;
+        })))
         .pipe($.cssnano())
         .pipe($.rename('bootstrap.min.css'))
         .pipe($.if(conf.preCSS.isSourcemaps, $.sourcemaps.write()))
-        .pipe(gulp.dest(conf.htdocs.css))
-        .on('error', $.notify.onError(function (error) {
-            return '\nError compile: ' + conf.htdocs.root + '/less/bootstrap/bootstrap.less' + '\n' + error;
-        }));
+        .pipe(gulp.dest(conf.htdocs.css));
 });
 
 gulp.task('build:less',  function(cb) {
     gulp.start('less');
 });
 
-gulp.task('watch:less', ['less'], function(cb) {
+gulp.task('watch:less', function(cb) {
     chokidar.watch(conf.preCSS.src, {
         ignored: '',
         persistent: true,
